@@ -24,8 +24,8 @@ public class Main {
 		while (true) {
 			//temporary way of adding channels (until sql is done)
 			List<String> channels = new ArrayList<>();
-			channels.add(0,"icbot47");					//adds mainChannel to the first position of the arraylist
-			channels.add("icdb47");						//temporary adding of second channel
+			channels.add(0,"#icbot47");					//adds mainChannel to the first position of the arraylist
+			//channels.add("#cineafx");					//temporary adding of second channel
 			
 			// remove bots that are not present in the database
 			for (int i = 0; i < bots.size(); i++) {
@@ -60,7 +60,6 @@ public class Main {
 					System.out.println("Added: " + channel);
 				}
 			}
-			
 			//waits 10 seconds
 			try {
 				Thread.sleep(10000);
@@ -69,8 +68,6 @@ public class Main {
 				System.exit(0);
 			}
 		}
-		
-		
 	}
 
 	/**

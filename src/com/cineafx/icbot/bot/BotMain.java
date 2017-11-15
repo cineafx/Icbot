@@ -10,8 +10,8 @@ public class BotMain {
 	private boolean running;
 	private boolean isMod;
 
-	// public Connection conn;
-	// public Chat chat;
+	public Connection conn;
+	//public Chat chat;
 
 	public BotMain(String hostname, int port, String password, String nick, String admin, String channel) {
 		this.hostname = hostname;
@@ -20,14 +20,14 @@ public class BotMain {
 		this.nick = nick;
 		this.admin = admin;
 		this.channel = channel;
-		// conn = new Connection(this);
+		conn = new Connection(this);
 	}
 	
 	/**
 	 * First time setup (connects to it's corresponding channel)
 	 */
 	public void init() {
-		//conn.connect();
+		conn.connect();
 	}
 
 	/**
