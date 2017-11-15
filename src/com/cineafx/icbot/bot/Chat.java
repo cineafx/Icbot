@@ -73,7 +73,7 @@ public class Chat implements Runnable {
 	 */
 	public void sendRawLine(String message) {
 		try {
-			System.out.println("To: " + botMain.getChannelname() + " --- Msg: " + message);
+			System.out.println("To: " + botMain.getChannelname() + ": " + message);
 			if (message.endsWith("\r\n")) {
 				conn.writer().write(message);
 			} else {

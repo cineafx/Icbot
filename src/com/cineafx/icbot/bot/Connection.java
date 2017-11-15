@@ -97,18 +97,18 @@ public class Connection implements Runnable {
 			try {
 				long timePing = System.currentTimeMillis();
 				if (botMain.isMainChannel()) {
-					chat.sendRawLine("PING twitch \r\n");
+					chat.sendRawLine("PING twitch");
 				}
 				Thread.sleep(1000);
-				System.out.println("Ping time: " + (lastPing - timePing));
-				if ((lastPing- timePing) > 1000) {
+				//System.out.println("Ping time: " + (lastPing - timePing));
+				if ((lastPing- timePing) > 1500) {
 					timeout++;
 					if (timeout > 10) {
 						botMain.setRunning(false);
 						join();
 					}
 					System.out.println("----------No Ping recieved at: " + botMain.getChannelname() + " for "
-							+ timeout * 2 + " seconds.");
+							+ timeout * 2 + " seconds. (Not correct value)");
 					Thread.sleep(1000);
 				} else {
 					Thread.sleep(58000);
