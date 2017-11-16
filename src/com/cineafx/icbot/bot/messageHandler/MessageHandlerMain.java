@@ -7,7 +7,7 @@ public class MessageHandlerMain {
 	
 private static String delimSpace = "[ ]";
 private static String delimSemicolon = "[;]";
-private static String[] propertiesNames = {"user","messagetype", "channel","message"};
+private static String[] propertiesNames = {"user-name","messagetype", "channel","message"};
 
 	public MessageHandlerMain() {
 		
@@ -15,96 +15,98 @@ private static String[] propertiesNames = {"user","messagetype", "channel","mess
 	}
 	
 	/**
-	 * Gives back the input stream split into the single properties:
-	 * 
-	 * Messagetype (PRIVMSG)
-	 * Channel
-	 * User
-	 * Message
-	 * 
-	 * @badges=
-	 * color=
-	 * display-name=
-	 * emotes=
-	 * id=
-	 * mod=
-	 * room-id=
-	 * subscriber=
-	 * tmi-sent-ts=
-	 * turbo=
-	 * user-id=
-	 * user-type=
+	 * Gives back the input stream (raw message from twitch irc server) split into the single properties:<br>
+	 * <br>
+	 * <ul>
+	 * <li>user-name</li>
+	 * <li>messagetype</li>
+	 * <li>channel</li>
+	 * <li>message</li>
+	 * <br>
+	 * <li>@badges=</li>
+	 * <li>color=</li>
+	 * <li>display-name=</li>
+	 * <li>emotes=</li>
+	 * <li>id=</li>
+	 * <li>mod=</li>
+	 * <li>room-id=</li>
+	 * <li>subscriber=</li>
+	 * <li>tmi-sent-ts=</li>
+	 * <li>turbo=</li>
+	 * <li>user-id=</li>
+	 * <li>user-type=</li>
+	 * </ul>
 	 * 
 	 * @param input
 	 * @return properties
 	 */
 	public Properties getMessageProperties(String input) {
-		Properties properties = new Properties();
+		Properties messageProperties = new Properties();
 		
+		//get all but the first token
+		String[] tokenSpace = this.splitSpace(input);
 		
-		String[] tokens = this.split(input);
-		if (tokens == null) {
+		//if there is no relevant token return null
+		if (tokenSpace == null) {
 			return null;
 		}
-		//only keep everything between the ":" and the "!"
-		tokens[0] = tokens[0].substring(1, tokens[0].indexOf('!'));
 		
-		//remove the leading ":" from the message
-		tokens[3] = tokens[3].substring(1);
 		
-		//set the fir
+		//gets the content of the first tokenSpace as an array 
+		String[] tokenSemicolon = this.splitSemicolon(tokenSpace[0]);
+		
+		//removes the first element of the tokenSpace array
+		tokenSpace = Arrays.copyOfRange(tokenSpace, 1, tokenSpace.length);
+		
+		
+		//set the properties for username, messagetype, channelname, message
 		for (int i = 0; i < 4; i++) {
-			properties.setProperty(propertiesNames[i], tokens[i]);
+			messageProperties.setProperty(propertiesNames[i], tokenSpace[i]);
 		}
 		
-		for (int i = 4; i < tokens.length; i++) {
-			String[] propertieToken = tokens[i].split("[=]", 2);
-			properties.setProperty(propertieToken[0], propertieToken[1]);
+		//set the properties for all other available properties
+		for (int i = 4; i < tokenSemicolon.length; i++) {
+			//split the parameter into name and value
+			String[] propertieToken = tokenSemicolon[i].split("[=]", 2);
+			//add the properties 
+			messageProperties.setProperty(propertieToken[0], propertieToken[1]);
 		}
 		
-		System.out.println(properties);
+		System.out.println(messageProperties);
 		
 		
-		return properties;
-	}
-	
-	private String[] split(String input) {
-		//Delimit the input array after spaces
-		String[] tokenSpace = input.split(delimSpace, 5);
-		//checks whether the incoming message is a PRIVMSG (normal chat message)
-		if (tokenSpace[2].equals("PRIVMSG")) {
-
-			//Delimit the first spot from the tokenSpace array by ;
-			String[] tokenSemicolon = tokenSpace[0].split(delimSemicolon);
-			
-			//removes the first element of the array
-			String[] tokenSpaceClean = Arrays.copyOfRange(tokenSpace, 1, tokenSpace.length);
-			
-			String[] tokens = this.appendStringArray(tokenSpaceClean, tokenSemicolon);
-			
-			return tokens;
-		} else {
-		return null;
-		}
+		return messageProperties;
 	}
 	
 	/**
-	 * appends string array b to the end of string array a
-	 * 
-	 * @param a
-	 * @param b
-	 * @return combinded string array
+	 * splits the input string with the delimSpace regex 
+	 * @param input
+	 * @return String[]
 	 */
-	private String[] appendStringArray(String[] a, String[] b) {
-	   int aLen = a.length;
-	   int bLen = b.length;
-	   
-	   //creates new array from the length of array a length + array b length
-	   String[] c = new String[aLen+bLen];
-	   
-	   //copy over the arrays in their specific location
-	   System.arraycopy(a, 0, c, 0, aLen);
-	   System.arraycopy(b, 0, c, aLen, bLen);
-	   return c;
+	private String[] splitSpace(String input) {
+		//Delimit the input array by spaces
+		String[] tokenSpace = input.split(delimSpace, 5);
+		//checks whether the incoming message is a PRIVMSG (normal chat message)
+		if (tokenSpace[2].equals("PRIVMSG")) {
+			
+			//only keep everything between the ":" and the "!" to get the clean username
+			tokenSpace[1] = tokenSpace[1].substring(1, tokenSpace[1].indexOf('!'));
+			
+			//remove the leading ":" from the message
+			tokenSpace[4] = tokenSpace[4].substring(1);
+			
+			return tokenSpace;
+		}
+		return null;
+	}
+	
+	/**
+	 * splits the input string with the delimSemicolon regex
+	 * @param input
+	 * @return String[]
+	 */
+	private String[] splitSemicolon(String input) {
+		
+		return input.split(delimSemicolon);
 	}
 }
