@@ -30,6 +30,7 @@ public class Connection implements Runnable {
 			socket = new Socket(botMain.getHostname(), botMain.getPort());
 			writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+			botMain.setRunning(true);
 			chat = new Chat(botMain, this);
 			chat.sendRawLine("PASS " + botMain.getPassword() + "\r\n");
 			chat.sendRawLine("NICK " + botMain.getNick() + "\r\n");
@@ -50,11 +51,11 @@ public class Connection implements Runnable {
 			}
 
 			join();
-			botMain.setRunning(true);
 			lastPing = System.currentTimeMillis();
 			new Thread(this).start();
 		} catch (Exception e) {
 			System.out.println(e);
+			botMain.setRunning(false);
 		}
 	}
 

@@ -1,22 +1,29 @@
 package com.cineafx.icbot.bot;
 
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.Queue;
+
+import com.cineafx.icbot.bot.messageHandler.MessageHandlerMain;
 
 public class Chat implements Runnable {
 
 	private BotMain botMain;
-	public Connection conn;
+	private Connection conn;
+	private MessageHandlerMain messageHandler;
+	
 	//public Clean cleanMessage;
 	//public Commands com;
 	//public Moderate mod;
 
 	private Queue<String> queueMessage;
 	private String line = "";
+	private Properties messageProperties = new Properties();
 
 	public Chat(BotMain botMain, Connection conn) {
 		this.botMain = botMain;
 		this.conn = conn;
+		messageHandler = new MessageHandlerMain();
 		//cleanMessage = new Clean(botMain);
 		//com = new Commands(botMain);
 		//mod = new Moderate(botMain);
@@ -87,6 +94,9 @@ public class Chat implements Runnable {
 
 	}
 
+	/**
+	 * Receiving of messages
+	 */
 	public void run() {
 		while (true) {
 			try {
@@ -101,6 +111,14 @@ public class Chat implements Runnable {
 						conn.pongReceived();
 					}
 					System.out.println("From: " + botMain.getChannelname() + ": " + line);
+					
+					messageProperties = messageHandler.getMessageProperties(line);
+					if (messageProperties != null) {
+						//Do something with the properties
+					}
+					
+					
+					
 					/*
 					String[] message = cleanMessage.clean(line);
 					if (message != null) {
