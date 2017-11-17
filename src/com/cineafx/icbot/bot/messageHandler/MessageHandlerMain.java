@@ -10,8 +10,6 @@ private static String delimSemicolon = "[;]";
 private static String[] propertiesNames = {"user-name","messagetype", "channel","message"};
 
 	public MessageHandlerMain() {
-		
-		
 	}
 	
 	/**
@@ -51,13 +49,11 @@ private static String[] propertiesNames = {"user-name","messagetype", "channel",
 			return null;
 		}
 		
-		
-		//gets the content of the first tokenSpace as an array 
+		//gets the content of the first tokenSpace as an array split at ";"
 		String[] tokenSemicolon = this.splitSemicolon(tokenSpace[0]);
 		
 		//removes the first element of the tokenSpace array
 		tokenSpace = Arrays.copyOfRange(tokenSpace, 1, tokenSpace.length);
-		
 		
 		//set the properties for username, messagetype, channelname, message
 		for (int i = 0; i < 4; i++) {
@@ -72,7 +68,7 @@ private static String[] propertiesNames = {"user-name","messagetype", "channel",
 			messageProperties.setProperty(propertieToken[0], propertieToken[1]);
 		}
 		
-		System.out.println(messageProperties);
+		//System.out.println(messageProperties);
 		
 		
 		return messageProperties;
@@ -106,7 +102,6 @@ private static String[] propertiesNames = {"user-name","messagetype", "channel",
 	 * @return String[]
 	 */
 	private String[] splitSemicolon(String input) {
-		
 		return input.split(delimSemicolon);
 	}
 }

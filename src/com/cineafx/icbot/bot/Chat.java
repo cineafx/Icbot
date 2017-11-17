@@ -131,58 +131,61 @@ public class Chat implements Runnable {
 	public void run() {
 		while (true) {
 			try {
+				//repeat while a new line can be read
 				while ((line = conn.reader().readLine()) != null) {
-					// System.out.println(botMain.getChannelname() + ": " + line);
+					//System.out.println("From: " + botMain.getChannelname() + ": " + line);
 					if (line.startsWith("PING")) {
-						//String extra = line.split(" ", 2)[1];
+						//String extra = line.split("[ ;]", 2)[1];
 						//sendRawLine("PONG " + extra);
 						sendRawLine("PONG tmi.twitch.tv");
 						System.out.println("++++++++++Ping from Twitch answered by " + botMain.getChannelname());
 					} else if (line.contains("PONG")) {
 						conn.pongReceived();
-					}
-					System.out.println("From: " + botMain.getChannelname() + ": " + line);
-					
-					messageProperties = messageHandler.getMessageProperties(line);
-					if (messageProperties != null) {
-						//Do something with the properties
+					} else {
 						
-						if (checkProperty("message", new String[] {"!icping","!pingall"})) {
+						messageProperties = messageHandler.getMessageProperties(line);
+						if (messageProperties != null) {
+							//Do something with the properties
+							
+							if (checkProperty("message", new String[] {"!icping","!pingall"})) {
+								send(messageProperties.getProperty("user-name") + ", sure LuL");
+							}
+							System.out.println(messageProperties.getProperty("channel") + " " + messageProperties.getProperty("user-name") + ": " + messageProperties.getProperty("message"));
+							
+							//check for shutdown command
+							if (checkProperty("message", "!icquit") && checkProperty("user-name", botMain.getAdmin())) {
+								this.send(messageProperties.getProperty("user-name") + ", " + "Shutting down...");
+	
+								// So the system has time to send the last message
+								try {
+									Thread.sleep(500);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+								System.exit(0);
+							}
+						}
+					
+					
+					
+						/*
+						String[] message = cleanMessage.clean(line);
+						if (message != null) {
+							System.out.println(botMain.getChannelname() + ": " + message[0] + "(" + message[2] + "|"
+									+ message[3] + "): " + message[1]);
+	
+							String answer = mod.check(message);
+							if (answer == null) {
+								answer = com.check(message);
+							}
+							if (answer != null) {
+								this.send(answer);
+							}
+	
 							
 						}
-						
-						if (checkProperty("message", "!icquit") && checkProperty("user-name", botMain.getAdmin())) {
-							this.send(messageProperties.getProperty("user-name") + ", " + "Shutting down...");
-
-							// So the system has time to send the last message
-							try {
-								Thread.sleep(500);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							System.exit(0);
-						}
+						 */
 					}
-					
-					
-					
-					/*
-					String[] message = cleanMessage.clean(line);
-					if (message != null) {
-						System.out.println(botMain.getChannelname() + ": " + message[0] + "(" + message[2] + "|"
-								+ message[3] + "): " + message[1]);
-
-						String answer = mod.check(message);
-						if (answer == null) {
-							answer = com.check(message);
-						}
-						if (answer != null) {
-							this.send(answer);
-						}
-
-						
-					}
-					*/
 				}
 			} catch (Exception e) {
 				System.out.println(e);
