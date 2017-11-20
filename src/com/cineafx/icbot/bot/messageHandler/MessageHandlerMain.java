@@ -3,13 +3,18 @@ package com.cineafx.icbot.bot.messageHandler;
 import java.util.Arrays;
 import java.util.Properties;
 
+import com.cineafx.icbot.bot.BotMain;
+
 public class MessageHandlerMain {
 	
-private static String delimSpace = "[ ]";
-private static String delimSemicolon = "[;]";
-private static String[] propertiesNames = {"user-name","messagetype", "channel","message"};
+	private BotMain botMain;
+	
+	private static String delimSpace = "[ ]";
+	private static String delimSemicolon = "[;]";
+	private static String[] propertiesNames = {"user-name","messagetype", "channel","message"};
 
-	public MessageHandlerMain() {
+	public MessageHandlerMain(BotMain botMain) {
+		this.botMain = botMain;
 	}
 	
 	/**
@@ -44,13 +49,14 @@ private static String[] propertiesNames = {"user-name","messagetype", "channel",
 		//get all but the first token
 		String[] tokenSpace = this.splitSpace(input);
 		
+
 		//if there is no relevant token return null
 		if (tokenSpace == null) {
 			return null;
-		}
+		}	
 		
 		//gets the content of the first tokenSpace as an array split at ";"
-		String[] tokenSemicolon = this.splitSemicolon(tokenSpace[0]);
+		String[] tokenSemicolon = splitSemicolon(tokenSpace[0]);
 		
 		//removes the first element of the tokenSpace array
 		tokenSpace = Arrays.copyOfRange(tokenSpace, 1, tokenSpace.length);
@@ -69,9 +75,18 @@ private static String[] propertiesNames = {"user-name","messagetype", "channel",
 		}
 		
 		//System.out.println(messageProperties);
+		//tokenSpace[2].equals("PRIVMSG") || tokenSpace[2].equals("USERSTATE")
+		switch (messageProperties.getProperty("messagetype", "NULL")) {
+		case "PRIVMSG":
+			return messageProperties;
+		case "USERSTATE":
+			usercheck(messageProperties);
+			return null;
+		default:
+			return null;
+		}
 		
 		
-		return messageProperties;
 	}
 	
 	/**
@@ -82,15 +97,14 @@ private static String[] propertiesNames = {"user-name","messagetype", "channel",
 	private String[] splitSpace(String input) {
 		//Delimit the input array by spaces
 		String[] tokenSpace = input.split(delimSpace, 5);
-		//checks whether the incoming message is a PRIVMSG (normal chat message)
+		
+		//checks whether the incoming message is a PRIVMSG (normal chat message) 
+		//or a USERSTATE message (used to check for mod / broadcaster status
 		if (tokenSpace[2].equals("PRIVMSG")) {
-			
 			//only keep everything between the ":" and the "!" to get the clean username
 			tokenSpace[1] = tokenSpace[1].substring(1, tokenSpace[1].indexOf('!'));
-			
 			//remove the leading ":" from the message
 			tokenSpace[4] = tokenSpace[4].substring(1);
-			
 			return tokenSpace;
 		}
 		return null;
@@ -103,5 +117,22 @@ private static String[] propertiesNames = {"user-name","messagetype", "channel",
 	 */
 	private String[] splitSemicolon(String input) {
 		return input.split(delimSemicolon);
+	}
+	
+	/**
+	 * checks the user for things different badges / unserstatus
+	 * (broadcaster, mod, etc ...)
+	 * @param messageProperties
+	 */
+	private void usercheck(Properties messageProperties) {
+		//TODO Fix this please
+		if (messageProperties.getProperty("user-name").equals(botMain.getNick())){
+			if (messageProperties.getProperty("@badge").contains("broadcaster") || messageProperties.getProperty("mod").equals("1")) {
+				botMain.setBotModstate(true);
+			} else {
+				botMain.setBotModstate(false);
+			}
+			System.out.println("Updated modstate: " + botMain.getBotModstate());
+		}
 	}
 }

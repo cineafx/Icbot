@@ -19,11 +19,13 @@ public class Chat implements Runnable {
 	private Queue<String> queueMessage;
 	private String line = "";
 	private Properties messageProperties = new Properties();
+	private Message message;
+	private boolean queuePause;
 
 	public Chat(BotMain botMain, Connection conn) {
 		this.botMain = botMain;
 		this.conn = conn;
-		messageHandler = new MessageHandlerMain();
+		messageHandler = new MessageHandlerMain(botMain);
 		//cleanMessage = new Clean(botMain);
 		//com = new Commands(botMain);
 		//mod = new Moderate(botMain);
@@ -40,25 +42,52 @@ public class Chat implements Runnable {
 		this.queueMessage.add(message);
 	}
 
+	/**
+	 * Sends a message as fast as possible (pauses the queue in the meantime)
+	 * Useful for shutdown command answeres
+	 * 	
+	 * @param message
+	 */
+	public void sendNext(String message) {
+		try {
+			queuePause = true;
+			Thread.sleep(350);
+			System.out.println("Send:" + botMain.getChannelname() + ": " + message);
+			sendRawLine("PRIVMSG " + botMain.getChannelname() + " :" + message + " \r\n");
+			if (!botMain.getBotModstate()) {
+				Thread.sleep(1200);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		queuePause = false;
+		
+	}
+	
+	/**
+	 * Messagequeue for sending messages.
+	 * Strings that are inserted into the queue are automatically send to their respective channels
+	 */
 	private void queue() {
 		queueMessage = new LinkedList<String>();
 		Thread messagequeue = new Thread(new Runnable() {
 			public void run() {
 				while (botMain.isRunning() || !queueMessage.isEmpty()) {
 					try {
-						if (!queueMessage.isEmpty()) {
+						//if queue is not empty and the queue is not paused
+						if (!queueMessage.isEmpty() && !queuePause) {
 							String message = queueMessage.poll();
 							System.out.println("Send:" + botMain.getChannelname() + ": " + message);
 							sendRawLine("PRIVMSG " + botMain.getChannelname() + " :" + message + " \r\n");
-							//conn.writer().write("PRIVMSG " + botMain.getChannelname() + " :" + message + " \r\n");
-							//conn.writer().flush();
-							int sleeptime = 2000;
+							int sleeptime = 1550;
 							if (botMain.getBotModstate()) {
-								sleeptime = 500;
+								sleeptime = 350;
 							}
+							/*
 							if (queueMessage.size() > 20) {
 								sleeptime = sleeptime * 2;
 							}
+							*/
 							Thread.sleep(sleeptime);
 						} else {
 							Thread.sleep(10);
@@ -93,37 +122,6 @@ public class Chat implements Runnable {
 		}
 
 	}
-	
-	/**
-	 * Returns whether a value of the current property name is equals to the value to check for<br>
-	 * property names can be found here: {@link com.cineafx.icbot.bot.messageHandler.MessageHandlerMain#getMessageProperties(String)}
-	 * 
-	 * @param propertyName
-	 * @param valueToCheckFor
-	 * @return boolean
-	 */
-	private boolean checkProperty(String propertyName, String valueToCheckFor) {
-		return messageProperties.getProperty(propertyName).equals(valueToCheckFor);
-	}
-	
-	/**
-	 * Returns whether a value of the current property name is equals to the value to check for<br>
-	 * property names can be found here: {@link com.cineafx.icbot.bot.messageHandler.MessageHandlerMain#getMessageProperties(String)}<br>
-	 * Use the following code example to create nameless String arrays<pre>
-	 * <code> checkProperty("propertyName", new String[] {"value1","value2"});</code></pre>
-	 * 
-	 * @param propertyName
-	 * @param valuesToCheckFor
-	 * @return boolean
-	 */
-	private boolean checkProperty(String propertyName, String[] valuesToCheckFor) {
-		for (String string : valuesToCheckFor) {
-			if (messageProperties.getProperty(propertyName).equals(string)) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	/**
 	 * Receiving of messages
@@ -143,48 +141,36 @@ public class Chat implements Runnable {
 						conn.pongReceived();
 					} else {
 						
+						//generates messageProperties from in incoming line
 						messageProperties = messageHandler.getMessageProperties(line);
+						
 						if (messageProperties != null) {
-							//Do something with the properties
+							//create a message object which is easier to use than messageProperties.getProperty("XXX");
+							message = new Message(messageProperties);
+							//Prints out #channel user-name: message
+							System.out.println(message.getChannel()+ " " + message.getUserName() + ": " + message.getMessage());
 							
-							if (checkProperty("message", new String[] {"!icping","!pingall"})) {
-								send(messageProperties.getProperty("user-name") + ", sure LuL");
+							
+							//ping command
+							if (message.checkProperty("message", new String[] {"!icping","!pingall"}) && message.checkProperty("user-name", botMain.getAdmin())) {
+								send(message.getUserName() + ", sure LuL");
 							}
-							System.out.println(messageProperties.getProperty("channel") + " " + messageProperties.getProperty("user-name") + ": " + messageProperties.getProperty("message"));
 							
 							//check for shutdown command
-							if (checkProperty("message", "!icquit") && checkProperty("user-name", botMain.getAdmin())) {
-								this.send(messageProperties.getProperty("user-name") + ", " + "Shutting down...");
+							if (message.checkProperty("message", "!icquit") && message.checkProperty("user-name", botMain.getAdmin())) {
+								this.sendNext(message.getUserName() + ", " + "Shutting down...");
 	
 								// So the system has time to send the last message
 								try {
-									Thread.sleep(500);
+									Thread.sleep(300);
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
 								System.exit(0);
 							}
 						}
-					
-					
-					
-						/*
-						String[] message = cleanMessage.clean(line);
-						if (message != null) {
-							System.out.println(botMain.getChannelname() + ": " + message[0] + "(" + message[2] + "|"
-									+ message[3] + "): " + message[1]);
-	
-							String answer = mod.check(message);
-							if (answer == null) {
-								answer = com.check(message);
-							}
-							if (answer != null) {
-								this.send(answer);
-							}
-	
-							
-						}
-						 */
+						 
+
 					}
 				}
 			} catch (Exception e) {
