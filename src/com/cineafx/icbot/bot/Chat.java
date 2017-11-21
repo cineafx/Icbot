@@ -131,7 +131,7 @@ public class Chat implements Runnable {
 			try {
 				//repeat while a new line can be read
 				while ((line = conn.reader().readLine()) != null) {
-					//System.out.println("From: " + botMain.getChannelname() + ": " + line);
+					System.out.println("From: " + botMain.getChannelname() + ": " + line);
 					if (line.startsWith("PING")) {
 						//String extra = line.split("[ ;]", 2)[1];
 						//sendRawLine("PONG " + extra);
@@ -145,7 +145,7 @@ public class Chat implements Runnable {
 						messageProperties = messageHandler.getMessageProperties(line);
 						
 						if (messageProperties != null) {
-							//create a message object which is easier to use than messageProperties.getProperty("XXX");
+							//create a message object which is easier to use than messageProperties.getProperty("X");
 							message = new Message(messageProperties);
 							//Prints out #channel user-name: message
 							System.out.println(message.getChannel()+ " " + message.getUserName() + ": " + message.getMessage());

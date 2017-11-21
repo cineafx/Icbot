@@ -11,7 +11,8 @@ public class MessageHandlerMain {
 	
 	private static String delimSpace = "[ ]";
 	private static String delimSemicolon = "[;]";
-	private static String[] propertiesNames = {"user-name","messagetype", "channel","message"};
+	private static String[] propertiesNamesPRIVMSG = {"user-name","messagetype", "channel","message"};
+	private static String[] propertiesNamesUSERSTATE = {"", "messagetype", "channel"};
 
 	public MessageHandlerMain(BotMain botMain) {
 		this.botMain = botMain;
@@ -58,35 +59,54 @@ public class MessageHandlerMain {
 		//gets the content of the first tokenSpace as an array split at ";"
 		String[] tokenSemicolon = splitSemicolon(tokenSpace[0]);
 		
+		
 		//removes the first element of the tokenSpace array
 		tokenSpace = Arrays.copyOfRange(tokenSpace, 1, tokenSpace.length);
-		
-		//set the properties for username, messagetype, channelname, message
-		for (int i = 0; i < 4; i++) {
-			messageProperties.setProperty(propertiesNames[i], tokenSpace[i]);
-		}
+	
 		
 		//set the properties for all other available properties
-		for (int i = 4; i < tokenSemicolon.length; i++) {
+		for (int i = 0; i < tokenSemicolon.length; i++) {
 			//split the parameter into name and value
 			String[] propertieToken = tokenSemicolon[i].split("[=]", 2);
 			//add the properties 
 			messageProperties.setProperty(propertieToken[0], propertieToken[1]);
 		}
 		
-		//System.out.println(messageProperties);
-		//tokenSpace[2].equals("PRIVMSG") || tokenSpace[2].equals("USERSTATE")
-		switch (messageProperties.getProperty("messagetype", "NULL")) {
-		case "PRIVMSG":
-			return messageProperties;
-		case "USERSTATE":
-			usercheck(messageProperties);
-			return null;
-		default:
-			return null;
+		if (tokenSpace.length == 4) {
+			//PRIVMSG
+			
+			//set the properties for username, messagetype, channelname, message
+			for (int i = 0; i < tokenSpace.length; i++) {
+				messageProperties.setProperty(propertiesNamesPRIVMSG[i], tokenSpace[i]);
+			}	
+			
+		} else if(tokenSpace.length == 3) {
+			//USERSTATE 
+			
+			//set the properties for messagetype, channelname 
+			for (int i = 1; i < tokenSpace.length; i++) {
+				messageProperties.setProperty(propertiesNamesUSERSTATE[i], tokenSpace[i]);
+			}	
+			
 		}
+	
+			
+		System.out.println(messageProperties);
 		
-		
+		//check how to handle the parameter depending on the messagetpye
+		if (messageProperties.getProperty("messagetype","NULL").equals("PRIVMSG")) {
+
+			//return all the properties
+			return messageProperties;
+			
+			
+		} else if (messageProperties.getProperty("messagetype","NULL").equals("USERSTATE")) {
+			//update things like the mod status of the bot			
+			usercheck(messageProperties);
+		} 
+		//return null in case it isn't "PRIVMSG"
+		return null;
+				
 	}
 	
 	/**
@@ -105,6 +125,8 @@ public class MessageHandlerMain {
 			tokenSpace[1] = tokenSpace[1].substring(1, tokenSpace[1].indexOf('!'));
 			//remove the leading ":" from the message
 			tokenSpace[4] = tokenSpace[4].substring(1);
+			return tokenSpace;
+		} else if (tokenSpace[2].equals("USERSTATE")) {
 			return tokenSpace;
 		}
 		return null;
@@ -125,14 +147,12 @@ public class MessageHandlerMain {
 	 * @param messageProperties
 	 */
 	private void usercheck(Properties messageProperties) {
-		//TODO Fix this please
-		if (messageProperties.getProperty("user-name").equals(botMain.getNick())){
-			if (messageProperties.getProperty("@badge").contains("broadcaster") || messageProperties.getProperty("mod").equals("1")) {
-				botMain.setBotModstate(true);
-			} else {
-				botMain.setBotModstate(false);
-			}
-			System.out.println("Updated modstate: " + botMain.getBotModstate());
+		//is broadcaster or mod
+		if (messageProperties.getProperty("@badges").contains("broadcaster") || messageProperties.getProperty("mod").equals("1")) {
+			botMain.setBotModstate(true);
+		} else {
+			botMain.setBotModstate(false);
 		}
+		System.out.println("Updated modstate. Is mod / broadcaster: " + botMain.getBotModstate());
 	}
 }
