@@ -11,7 +11,6 @@ public class BotMain {
 	private boolean isMod;
 
 	public Connection conn;
-	//public Chat chat;
 
 	public BotMain(String hostname, int port, String password, String nick, String admin, String channel) {
 		this.hostname = hostname;
@@ -22,7 +21,7 @@ public class BotMain {
 		this.channel = channel;
 		conn = new Connection(this);
 	}
-	
+
 	/**
 	 * First time setup (connects to it's corresponding channel)
 	 */
@@ -106,7 +105,7 @@ public class BotMain {
 	public String getAdmin() {
 		return this.admin;
 	}
-	
+
 	/**
 	 * Returns the username of the bot
 	 *
@@ -115,7 +114,7 @@ public class BotMain {
 	public String getNick() {
 		return this.nick;
 	}
-	
+
 	/**
 	 * Returns whether the bot is a moderator in the channel
 	 *
@@ -124,7 +123,7 @@ public class BotMain {
 	public boolean getBotModstate() {
 		return isMod;
 	}
-	
+
 	/**
 	 * Set the state of whether the bot is a mod
 	 * 

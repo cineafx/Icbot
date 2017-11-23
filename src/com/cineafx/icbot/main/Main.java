@@ -17,25 +17,23 @@ public class Main {
 		//apply default settings for the twitchbot builder
 		defineBuilderDefaults(properties);
 		System.out.println(properties);
-		
+
 		//create a new list for all bots
 		List<BotMain> bots = new ArrayList<>();
-		
+
 		while (true) {
 			//temporary way of adding channels (until sql is done)
 			List<String> channels = new ArrayList<>();
-			channels.add(0,"#icbot47");					//adds mainChannel to the first position of the arraylist
-			channels.add("#cineafx");					//temporary adding of second channel
-			channels.add("#pajlada");					//temporary adding of second channel
-			
+			channels.add(0,"#" + properties.getProperty("nick"));		//adds it's own channel to the first position of the arraylist
+
+
+			channels.add("#cineafx");									//temporary adding of second channel
+			channels.add("#pajlada");									//temporary adding of third channel
+
 			// remove bots that are not present in the database
 			for (int i = 0; i < bots.size(); i++) {
-				boolean exists = false;
-				//checks if channel is supposed to exist
-				if (channels.contains(bots.get(i).getChannelname())) {
-					exists = true;
-				}
-				if (!exists) {
+				//checks if channel isn't supposed to exist
+				if (!channels.contains(bots.get(i).getChannelname())) {
 					//removes bot
 					System.out.println("Removed: " + bots.get(i).getChannelname());
 					bots.remove(i);
