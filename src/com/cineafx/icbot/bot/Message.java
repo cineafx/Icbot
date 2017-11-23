@@ -4,7 +4,7 @@ import java.util.Properties;
 
 public class Message {
 	private Properties messageProperties;
-	
+
 	/**
 	 * Create a set of properties to be read with this class
 	 * property names can be found here: {@link com.cineafx.icbot.bot.messageHandler.MessageHandlerMain#getMessageProperties(String)}
@@ -15,8 +15,8 @@ public class Message {
 	public Message(Properties messageProperties) {
 		this.messageProperties = messageProperties;
 	}
-	
-	
+
+
 	/**
 	 * Returns whether a value of the current property name is equals to the value to check for<br>
 	 * property names can be found here: {@link com.cineafx.icbot.bot.messageHandler.MessageHandlerMain#getMessageProperties(String)}
@@ -28,7 +28,7 @@ public class Message {
 	public boolean checkProperty(String propertyName, String valueToCheckFor) {
 		return messageProperties.getProperty(propertyName).equals(valueToCheckFor);
 	}
-	
+
 	/**
 	 * Returns whether a value of the current property name is equals to the value to check for<br>
 	 * property names can be found here: {@link com.cineafx.icbot.bot.messageHandler.MessageHandlerMain#getMessageProperties(String)}<br>
@@ -47,7 +47,7 @@ public class Message {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Returns the User name from messageProperties
 	 * @return user name
@@ -55,7 +55,7 @@ public class Message {
 	public String getUserName() {
 		return messageProperties.getProperty("user-name");
 	}
-	
+
 	/**
 	 * Returns the Messagetype from messageProperties
 	 * @return messagetype

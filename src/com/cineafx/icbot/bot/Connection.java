@@ -83,14 +83,14 @@ public class Connection implements Runnable {
 	public BufferedReader reader() {
 		return reader;
 	}
-	
+
 	/**
 	 * Sets the lastping to the current time in Milliseconds
 	 */
 	public void pongReceived() {
 		this.lastPing = System.currentTimeMillis();
 	}
-	
+
 
 	public void run() {
 		int timeout = 0;
