@@ -27,6 +27,7 @@ public class MessageHandlerMain {
 		
 		//generates messageProperties from in incoming line
 		messageProperties = propertiehandler.getMessageProperties(input);
+
 		
 		if (messageProperties != null) {
 			//create a message object which is easier to use than messageProperties.getProperty("X");
@@ -39,7 +40,6 @@ public class MessageHandlerMain {
 				send("miniW ");
 			}
 			 */
-			
 			if (returnMessage == null) {
 				returnMessage = checkForPing(messageProperties);
 			}

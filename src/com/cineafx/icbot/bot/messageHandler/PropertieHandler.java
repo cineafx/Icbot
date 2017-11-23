@@ -11,6 +11,7 @@ public class PropertieHandler {
 	private static String delimSemicolon = "[;]";
 	private static String[] propertiesNamesPRIVMSG = {"user-name","messagetype", "channel","message"};
 	private static String[] propertiesNamesUSERSTATE = {"", "messagetype", "channel"};
+	Properties messageProperties;
 	
 	private BotMain botMain;
 
@@ -45,7 +46,7 @@ public class PropertieHandler {
 	 * @return properties
 	 */
 	public Properties getMessageProperties(String input) {
-		Properties messageProperties = new Properties();
+		messageProperties = new Properties();
 
 		//get all but the first token
 		String[] tokenSpace = this.splitSpace(input);
@@ -56,12 +57,14 @@ public class PropertieHandler {
 			return null;
 		}	
 
+		
 		//gets the content of the first tokenSpace as an array split at ";"
 		String[] tokenSemicolon = splitSemicolon(tokenSpace[0]);
 
 
 		//removes the first element of the tokenSpace array
 		tokenSpace = Arrays.copyOfRange(tokenSpace, 1, tokenSpace.length);
+
 
 
 		//set the properties for all other available properties
@@ -89,7 +92,9 @@ public class PropertieHandler {
 			}	
 
 		}
-
+		
+		System.out.println("--------------");
+		//TODO fix problem somewhere below here
 
 		//System.out.println(messageProperties);
 
