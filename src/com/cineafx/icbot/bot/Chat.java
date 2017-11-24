@@ -12,14 +12,9 @@ public class Chat implements Runnable {
 	private Connection conn;
 	private MessageHandlerMain messageHandler;
 
-	//public Clean cleanMessage;
-	//public Commands com;
-	//public Moderate mod;
 
 	private Queue<String> queueMessage;
 	private String line = "";
-	private Properties messageProperties = new Properties();
-	private Message message;
 	private boolean queuePause;
 
 	public Chat(BotMain botMain, Connection conn) {
@@ -96,6 +91,13 @@ public class Chat implements Runnable {
 						System.out.println(e);
 					}
 				}
+				// So the system has time to send any last messages send by sendNext()
+				try {
+					Thread.sleep(300);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				System.exit(0);
 			}
 		});
 		messagequeue.start();
@@ -128,9 +130,10 @@ public class Chat implements Runnable {
 	 */
 	public void run() {
 		while (true) {
+			String returnMessage;
 			try {
 				//repeat while a new line can be read
-				while ((line = conn.reader().readLine()) != null) {
+			while ((line = conn.reader().readLine()) != null) {
 					//System.out.println("From: " + botMain.getChannelname() + ": " + line);
 					if (line.startsWith("PING")) {
 						//String extra = line.split("[ ;]", 2)[1];
@@ -140,42 +143,20 @@ public class Chat implements Runnable {
 					} else if (line.contains("PONG")) {
 						conn.pongReceived();
 					} else {
-
-						//generates messageProperties from in incoming line
-						messageProperties = messageHandler.getMessageProperties(line);
-
-						if (messageProperties != null) {
-							//create a message object which is easier to use than messageProperties.getProperty("X");
-							message = new Message(messageProperties);
-							//Prints out #channel user-name: message
-							System.out.println(message.getChannel()+ " " + message.getUserName() + ": " + message.getMessage());
-
-							/*
-							if (message.getMessage().contains("i c ") || message.getMessage().endsWith("i c")) {
-								send("miniW ");
-							}
-							 */
-
-							//ping command
-							if (message.checkProperty("message", new String[] {"!icping","!pingall"}) && message.checkProperty("user-name", botMain.getAdmin())) {
-								send(message.getUserName() + ", sure LuL");
-							}
-
-							//check for shutdown command
-							if (message.checkProperty("message", "!icquit") && message.checkProperty("user-name", botMain.getAdmin())) {
-								this.sendNext(message.getUserName() + ", " + "Shutting down...");
-
-								// So the system has time to send the last message
-								try {
-									Thread.sleep(300);
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-								System.exit(0);
-							}
+						
+						//long endtime = 0;
+						//long starttime = System.nanoTime();
+						
+						//send the input line to the messagehandler which will return the string to send out to the irc server
+						returnMessage = messageHandler.handleMessage(line);
+						
+						//endtime = System.nanoTime();
+						//System.out.println("____________Message processing time: " + (((double)endtime - (double)starttime)/1000000) + " ms\n");
+						
+						//only send the returnMessage isn't null and isn't an empty string (after trimming)
+						if (returnMessage != null && !returnMessage.trim().isEmpty()) {
+							send(returnMessage);
 						}
-
-
 					}
 				}
 			} catch (Exception e) {
