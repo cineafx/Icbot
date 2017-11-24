@@ -1,17 +1,14 @@
 package com.cineafx.icbot.bot.messageHandler;
 
-import java.util.Arrays;
 import java.util.Properties;
 
 import com.cineafx.icbot.bot.BotMain;
-import com.cineafx.icbot.bot.Message;
 
 public class MessageHandlerMain {
 
 	//classes / objects
 	private BotMain botMain;
 	private PropertieHandler propertiehandler;
-	private Message message;
 	
 	//other
 	private Properties messageProperties = new Properties();

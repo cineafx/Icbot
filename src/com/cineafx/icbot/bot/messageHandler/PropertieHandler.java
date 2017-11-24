@@ -6,17 +6,17 @@ import java.util.Properties;
 import com.cineafx.icbot.bot.BotMain;
 
 public class PropertieHandler {
-	
+
 	private static String delimSpace = "[ ]";
 	private static String delimSemicolon = "[;]";
 	private static String[] propertiesNamesPRIVMSG = {"user-name","messagetype", "channel","message"};
 	private static String[] propertiesNamesUSERSTATE = {"", "messagetype", "channel"};
 	private Properties messageProperties;
-	
+
 	private BotMain botMain;
 
 	public PropertieHandler(BotMain botMain) {
-		botMain = this.botMain;
+		this.botMain = botMain;
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class PropertieHandler {
 			return null;
 		}	
 
-		
+
 		//gets the content of the first tokenSpace as an array split at ";"
 		String[] tokenSemicolon = splitSemicolon(tokenSpace[0]);
 
@@ -150,14 +150,13 @@ public class PropertieHandler {
 	private void usercheck(Properties messageProperties) {
 		//is broadcaster or mod
 		if (messageProperties.getProperty("@badges","NULL").contains("broadcaster") || messageProperties.getProperty("mod","NULL").equals("1")) {
-			botMain.setBotModstate(true);				//TODO some error here
-			
+			botMain.setBotModstate(true);
 		} else {
 			botMain.setBotModstate(false);
 		}
-		//System.out.println(botMain.getChannelname() + " <<Is mod / broadcaster: " + botMain.getBotModstate() + ">>");
+		System.out.println(botMain.getChannelname() + " <<Is mod / broadcaster: " + botMain.getBotModstate() + ">>");
 	}
-	
-	
-	
+
+
+
 }
