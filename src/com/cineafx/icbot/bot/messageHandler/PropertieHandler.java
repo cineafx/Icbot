@@ -11,7 +11,7 @@ public class PropertieHandler {
 	private static String delimSemicolon = "[;]";
 	private static String[] propertiesNamesPRIVMSG = {"user-name","messagetype", "channel","message"};
 	private static String[] propertiesNamesUSERSTATE = {"", "messagetype", "channel"};
-	Properties messageProperties;
+	private Properties messageProperties;
 	
 	private BotMain botMain;
 
@@ -92,15 +92,11 @@ public class PropertieHandler {
 			}	
 
 		}
-		
-		System.out.println("--------------");
-		//TODO fix problem somewhere below here
 
 		//System.out.println(messageProperties);
 
 		//check how to handle the parameter depending on the messagetpye
 		if (messageProperties.getProperty("messagetype","NULL").equals("PRIVMSG")) {
-
 			//return all the properties
 			return messageProperties;
 
@@ -153,12 +149,13 @@ public class PropertieHandler {
 	 */
 	private void usercheck(Properties messageProperties) {
 		//is broadcaster or mod
-		if (messageProperties.getProperty("@badges").contains("broadcaster") || messageProperties.getProperty("mod").equals("1")) {
-			botMain.setBotModstate(true);
+		if (messageProperties.getProperty("@badges","NULL").contains("broadcaster") || messageProperties.getProperty("mod","NULL").equals("1")) {
+			botMain.setBotModstate(true);				//TODO some error here
+			
 		} else {
 			botMain.setBotModstate(false);
 		}
-		System.out.println(botMain.getChannelname() + " <<Is mod / broadcaster: " + botMain.getBotModstate() + ">>");
+		//System.out.println(botMain.getChannelname() + " <<Is mod / broadcaster: " + botMain.getBotModstate() + ">>");
 	}
 	
 	
