@@ -43,7 +43,7 @@ public class SqlMain {
 	 * Default query method
 	 * 
 	 * @param statement
-	 * @return Resultset
+	 * @return ResultSet
 	 */
 	protected ResultSet query(String statement){
 		try {

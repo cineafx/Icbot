@@ -1,7 +1,6 @@
 package com.cineafx.icbot.bot;
 
 import java.util.LinkedList;
-import java.util.Properties;
 import java.util.Queue;
 
 import com.cineafx.icbot.bot.messageHandler.MessageHandlerMain;
