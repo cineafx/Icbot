@@ -5,11 +5,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Properties;
 
 import com.cineafx.icbot.bot.*;
+import com.cineafx.icbot.sql.*;
 
 public class Main {
+
+	SqlMain sqlconnection;
 
 	public Main() throws Exception {
 		// read properties from file
@@ -21,14 +25,27 @@ public class Main {
 		//create a new list for all bots
 		List<BotMain> bots = new ArrayList<>();
 
+		String sqlserver = properties.getProperty("sqlserver");
+		String sqluser = properties.getProperty("sqluser");
+		String sqlpass = properties.getProperty("sqlpass");
+		String sqldbname = properties.getProperty("sqldbname");
+
+		//if not all required infos are there exit the program
+		if (sqlserver.isEmpty() || sqluser.isEmpty() || sqlpass.isEmpty() || sqldbname.isEmpty()) {
+			System.exit(78);
+		}
+
+		sqlconnection = new SqlMain(sqlserver, sqluser, sqlpass, sqldbname);
+
 		while (true) {
 			//temporary way of adding channels (until sql is done)
 			List<String> channels = new ArrayList<>();
-			channels.add(0,"#" + properties.getProperty("nick"));		//adds it's own channel to the first position of the arraylist
 
+			//adds it's own channel to the first position of the arraylist
+			channels.add(0,"#" + properties.getProperty("nick"));		
 
-			channels.add("#cineafx");									//temporary adding of second channel
-			channels.add("#pajlada");									//temporary adding of third channel
+			//add the channels received by an sql query
+			channels.addAll(Arrays.asList(sqlconnection.getChannels()));
 
 			// remove bots that are not present in the database
 			for (int i = 0; i < bots.size(); i++) {
