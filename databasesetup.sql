@@ -1,6 +1,8 @@
+/* Create Database */
 CREATE SCHEMA `icbot` DEFAULT CHARACTER SET utf8 ;
 
 
+/* Create table channels*/
 CREATE TABLE `channels` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `channelName` varchar(45) NOT NULL,
@@ -11,6 +13,7 @@ CREATE TABLE `channels` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ;
 
 
+/* Create table comments */
 CREATE TABLE `commands` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `channel` int(11) DEFAULT NULL,
