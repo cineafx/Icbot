@@ -32,6 +32,10 @@ public class TwitchBotBuilder {
 	private static String defaultNick;
 	private static String defaultAdmin;
 	private static String defaultChannel;
+	private static String defaultSqlServername;
+	private static String defaultSqlUsername;
+	private static String defaultSqlPassword;
+	private static String defaultSqlDbname;
 
 	private String hostname;
 	private Integer port;
@@ -39,6 +43,10 @@ public class TwitchBotBuilder {
 	private String nick;
 	private String admin;
 	private String channel;
+	private String sqlServername;
+	private String sqlUsername;
+	private String sqlPassword;
+	private String sqlDbname;
 
 	/**
 	 * private constructor. Use {@link #newBot()} if you want to create a new Bot.
@@ -124,6 +132,54 @@ public class TwitchBotBuilder {
 	}
 
 	/**
+	 * set the SQL database server address this bot should use
+	 * 
+	 * @see TwitchBot#connect()
+	 * @param address
+	 * @return this builder
+	 */
+	public TwitchBotBuilder setSqlServername(String sqlServername) {
+		this.sqlServername = sqlServername;
+		return this;
+	}
+
+	/**
+	 * set the SQL database server username this bot should use
+	 * 
+	 * @see TwitchBot#connect()
+	 * @param username
+	 * @return this builder
+	 */
+	public TwitchBotBuilder setSqlUsername(String sqlUsername) {
+		this.sqlUsername = sqlUsername;
+		return this;
+	}
+
+	/**
+	 * set the SQL database server password this bot should use
+	 * 
+	 * @see TwitchBot#connect()
+	 * @param password
+	 * @return this builder
+	 */
+	public TwitchBotBuilder setSqlPassword(String sqlPassword) {
+		this.sqlPassword = sqlPassword;
+		return this;
+	}
+
+	/**
+	 * set the SQL database server database name this bot should use
+	 * 
+	 * @see TwitchBot#connect()
+	 * @param Dbname
+	 * @return this builder
+	 */
+	public TwitchBotBuilder setSqlDbname(String sqlDbname) {
+		this.sqlDbname = sqlDbname;
+		return this;
+	}
+
+	/**
 	 * Generate and return the TwitchBot
 	 * 
 	 * @return instance of {@link TwitchBot}.
@@ -136,6 +192,10 @@ public class TwitchBotBuilder {
 		String setThisNick = defaultNick;
 		String setThisAdmin = defaultAdmin;
 		String setThisChannel = defaultChannel;
+		String setThisSqlServerName = defaultSqlServername;
+		String setThisSqlUsername = defaultSqlUsername;
+		String setThisSqlPassword = defaultSqlPassword;
+		String setThisSqlDbname = defaultSqlDbname;
 
 		// override variables defined above in case they are overridden
 		if (hostname != null) {
@@ -156,12 +216,24 @@ public class TwitchBotBuilder {
 		if (channel != null) {
 			setThisChannel = channel;
 		}
+		if (sqlServername != null) {
+			setThisSqlServerName = sqlServername;
+		}
+		if (sqlUsername != null) {
+			setThisSqlUsername = sqlUsername;
+		}
+		if (sqlPassword != null) {
+			setThisSqlPassword = sqlPassword;
+		}
+		if (sqlDbname != null) {
+			setThisSqlDbname = sqlDbname;
+		}
 
 		// you might want to consider refactoring this constructor
 		// i. e. making it package-private and putting it together with the builder in a
 		// package
 		BotMain returnThis = new BotMain(setThisHostname, setThisPort, setThisPassword, setThisNick, setThisAdmin,
-				setThisChannel);
+				setThisChannel, setThisSqlServerName, setThisSqlUsername, setThisSqlPassword, setThisSqlDbname);
 		return returnThis;
 	}
 
@@ -223,5 +295,45 @@ public class TwitchBotBuilder {
 	 */
 	public static void setDefaultChannel(String defaultChannel) {
 		TwitchBotBuilder.defaultChannel = defaultChannel;
+	}
+
+	/**
+	 * set fallback sql servername. Will be used when {@link #setChannel} is not used.
+	 * 
+	 * @see #setChannel(String)
+	 * @param defaultSqlServername
+	 */
+	public static void setDefaultSqlServername(String defaultSqlServername) {
+		TwitchBotBuilder.defaultSqlServername = defaultSqlServername;
+	}
+
+	/**
+	 * set fallback sql username. Will be used when {@link #setChannel} is not used.
+	 * 
+	 * @see #setChannel(String)
+	 * @param defaultSqlUsername
+	 */
+	public static void setDefaultSqlUsername(String defaultSqlUsername) {
+		TwitchBotBuilder.defaultSqlUsername = defaultSqlUsername;
+	}
+
+	/**
+	 * set fallback sql password. Will be used when {@link #setChannel} is not used.
+	 * 
+	 * @see #setChannel(String)
+	 * @param defaultSqlPassword
+	 */
+	public static void setDefaultSqlPassword(String defaultSqlPassword) {
+		TwitchBotBuilder.defaultSqlPassword = defaultSqlPassword;
+	}
+
+	/**
+	 * set fallback sql database name. Will be used when {@link #setChannel} is not used.
+	 * 
+	 * @see #setChannel(String)
+	 * @param defaultSqlDbname
+	 */
+	public static void setDefaultSqlDbname(String defaultSqlDbname) {
+		TwitchBotBuilder.defaultSqlDbname = defaultSqlDbname;
 	}
 }

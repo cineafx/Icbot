@@ -9,17 +9,26 @@ public class BotMain {
 	private String channel = "";
 	private boolean running;
 	private boolean isMod;
+	private String sqlServername;
+	private String sqlUsername;
+	private String sqlPassword;
+	private String sqlDbname;
 
 	public Connection conn;
 
-	public BotMain(String hostname, int port, String password, String nick, String admin, String channel) {
+	public BotMain(String hostname, int port, String password, String nick, String admin, String channel, String sqlServername, String sqlUsername, String sqlPassword, String sqlDbname) {
 		this.hostname = hostname;
 		this.port = port;
 		this.password = password;
 		this.nick = nick;
 		this.admin = admin;
 		this.channel = channel;
+		this.sqlServername = sqlServername;
+		this.sqlUsername = sqlUsername;
+		this.sqlPassword = sqlPassword;
+		this.sqlDbname = sqlDbname;
 		conn = new Connection(this);
+
 	}
 
 	/**
@@ -132,4 +141,23 @@ public class BotMain {
 	public void setBotModstate(boolean modstate) {
 		isMod = modstate;
 	}
+
+	//TODO: write basic comments
+
+	public String getSqlServername() {
+		return sqlServername;
+	}
+
+	public String getSqlUsername() {
+		return sqlUsername;
+	}
+
+	public String getSqlPassword() {
+		return sqlPassword;
+	}
+
+	public String getSqlDbname() {
+		return sqlDbname;
+	}
+
 }

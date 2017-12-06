@@ -13,7 +13,7 @@ import com.cineafx.icbot.sql.*;
 
 public class Main {
 
-	SqlMain sqlconnection;
+	SqlChannels sqlChannels;
 
 	public Main() throws Exception {
 		// read properties from file
@@ -35,7 +35,7 @@ public class Main {
 			System.exit(78);
 		}
 
-		sqlconnection = new SqlMain(sqlserver, sqluser, sqlpass, sqldbname);
+		sqlChannels = new SqlChannels(sqlserver, sqluser, sqlpass, sqldbname);
 
 		while (true) {
 			//temporary way of adding channels (until sql is done)
@@ -45,7 +45,7 @@ public class Main {
 			channels.add(0,"#" + properties.getProperty("nick"));		
 
 			//add the channels received by an sql query
-			channels.addAll(Arrays.asList(sqlconnection.getChannels()));
+			channels.addAll(Arrays.asList(sqlChannels.getChannels()));
 
 			// remove bots that are not present in the database
 			for (int i = 0; i < bots.size(); i++) {
@@ -101,6 +101,18 @@ public class Main {
 
 		String adminString = properties.getProperty("admin");
 		TwitchBotBuilder.setDefaultAdmin(adminString);
+
+		String sqlserverString = properties.getProperty("sqlserver");
+		TwitchBotBuilder.setDefaultSqlServername(sqlserverString);
+
+		String sqluserString = properties.getProperty("sqluser");
+		TwitchBotBuilder.setDefaultSqlUsername(sqluserString);
+
+		String sqlpassString = properties.getProperty("sqlpass");
+		TwitchBotBuilder.setDefaultSqlPassword(sqlpassString);
+
+		String sqldbnameString = properties.getProperty("sqldbname");
+		TwitchBotBuilder.setDefaultSqlDbname(sqldbnameString);
 	}
 
 	/**

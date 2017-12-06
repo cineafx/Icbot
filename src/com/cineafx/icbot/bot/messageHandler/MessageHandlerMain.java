@@ -3,12 +3,14 @@ package com.cineafx.icbot.bot.messageHandler;
 import java.util.Properties;
 
 import com.cineafx.icbot.bot.BotMain;
+import com.cineafx.icbot.sql.SqlCommands;
 
 public class MessageHandlerMain {
 
 	//classes / objects
 	private BotMain botMain;
 	private PropertieHandler propertiehandler;
+	private SqlCommands sqlcommands;
 	
 	//other
 	private Properties messageProperties = new Properties();
@@ -17,8 +19,14 @@ public class MessageHandlerMain {
 	public MessageHandlerMain(BotMain botMain) {
 		this.botMain = botMain;
 		propertiehandler = new PropertieHandler(botMain);
+		sqlcommands = new SqlCommands(botMain.getSqlServername(), botMain.getSqlUsername(), botMain.getSqlPassword(), botMain.getSqlDbname());
 	}
 	
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 */
 	public String handleMessage(String input){
 		returnMessage = null;
 		
@@ -44,6 +52,8 @@ public class MessageHandlerMain {
 				returnMessage = checkForShutdown(messageProperties);
 			}
 			
+			
+			
 			System.out.println(botMain.getChannelname() + " " + messageProperties.getProperty("user-name") + ": " + messageProperties.getProperty("message"));
 
 		}
@@ -52,6 +62,11 @@ public class MessageHandlerMain {
 		return returnMessage; 
 	}
 	
+	/**
+	 * 
+	 * @param property
+	 * @return
+	 */
 	private String checkForPing(Properties property) {
 		String returnMessage = null;
 		
@@ -63,6 +78,11 @@ public class MessageHandlerMain {
 		return returnMessage;
 	}
 	
+	/**
+	 * 
+	 * @param property
+	 * @return
+	 */
 	private String checkForShutdown(Properties property) {
 		String returnMessage = null;
 		

@@ -36,7 +36,6 @@ public class SqlMain {
 			//Handle errors for Class.forName
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -59,7 +58,6 @@ public class SqlMain {
 		return null;
 	}
 
-	//TODO: test this at some point ... please
 	/**
 	 * Retrieves full row depending on row index (starting at 0)
 	 * 
@@ -88,7 +86,7 @@ public class SqlMain {
 			rs.next();
 			//fill array with content of row
 			for (int i = 0; i < columnAmount; i++) {
-				returnArray[i] = rs.getString(i);
+				returnArray[i] = rs.getString(i+1);
 			}
 			return returnArray;
 		}catch(SQLException se){
@@ -139,23 +137,4 @@ public class SqlMain {
 		return null;
 	}
 
-	/**
-	 * get the current channels from the database
-	 * 
-	 * @return String[]
-	 */
-	public String[] getChannels() {
-
-		//query from the table channels the attribute channelName
-		String[] channels = this.getColumn("channels", "channelName");
-
-		//if channelname doesn't start with # add one
-		for (int i = 0; i < channels.length; i++) {
-			if (!channels[i].startsWith("#")) {
-				channels[i] = "#" + channels[i];
-			}
-		}		
-
-		return channels;
-	}
 }
