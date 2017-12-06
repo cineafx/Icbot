@@ -63,9 +63,10 @@ public class MessageHandlerMain {
 	}
 	
 	/**
+	 * returns the appropriate message for the ping commands or NULL
 	 * 
 	 * @param property
-	 * @return
+	 * @return returnString
 	 */
 	private String checkForPing(Properties property) {
 		String returnMessage = null;
@@ -79,9 +80,10 @@ public class MessageHandlerMain {
 	}
 	
 	/**
+	 * returns the appropriate message for the quit commands or NULL
 	 * 
 	 * @param property
-	 * @return
+	 * @return returnString
 	 */
 	private String checkForShutdown(Properties property) {
 		String returnMessage = null;

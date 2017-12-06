@@ -142,20 +142,38 @@ public class BotMain {
 		isMod = modstate;
 	}
 
-	//TODO: write basic comments
-
+	/**
+	 * returns assigned sql servername
+	 * 
+	 * @return sqlServername
+	 */
 	public String getSqlServername() {
 		return sqlServername;
 	}
 
+	/**
+	 * returns assigned sql username
+	 * 
+	 * @return sqlUsername
+	 */
 	public String getSqlUsername() {
 		return sqlUsername;
 	}
 
+	/**
+	 * reutrns assigned sql password
+	 * 
+	 * @return sqlPassword
+	 */
 	public String getSqlPassword() {
 		return sqlPassword;
 	}
 
+	/**
+	 * returns assigned sql dbname
+	 * 
+	 * @return sqlDbname
+	 */
 	public String getSqlDbname() {
 		return sqlDbname;
 	}
