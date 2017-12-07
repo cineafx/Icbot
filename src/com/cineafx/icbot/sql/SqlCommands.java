@@ -10,13 +10,6 @@ public final class SqlCommands extends SqlMain {
 
 	}
 
-	public String[] checkForCommands(String inputMessage, String channel) {
-		String command = "";
-		getCommand(command,channel);
-		return null;
-	}
-
-
 	/**
 	 * gets the command currently applying<br>
 	 * channel specific commands > global commands<br>
@@ -31,7 +24,7 @@ public final class SqlCommands extends SqlMain {
 	 * 	<li>timesUsed</li>
 	 * </ol>
 	 */
-	private String[] getCommand(String command, String channel) {
+	public String[] getCommand(String command, String channel) {
 		try {
 
 			//TODO: write explanation
