@@ -9,7 +9,6 @@ public class SqlMain {
 	private String dbname;
 
 	private Connection conn;
-	private Statement stmt;
 
 	public SqlMain(String servername, String username, String password, String dbname) {
 		this.dbUrl  = "jdbc:mysql://" + servername + "/" + dbname;
@@ -25,8 +24,7 @@ public class SqlMain {
 			System.out.println("Connecting to database...");
 			conn = DriverManager.getConnection(dbUrl,user,pass);
 
-			//Create statement
-			stmt = conn.createStatement();
+
 
 			System.out.println("Connected!");
 		}catch(SQLException se){
@@ -39,14 +37,15 @@ public class SqlMain {
 	}
 
 	/**
-	 * Default query method
+	 * Does a default query without PreparedStatement
 	 * 
 	 * @param statement
 	 * @return ResultSet
 	 */
 	protected ResultSet query(String statement){
 		try {
-			//return query answer
+			//Create statement
+			Statement stmt = conn.createStatement();
 			return stmt.executeQuery(statement);
 		}catch(SQLException se){
 			//Handle errors for JDBC
@@ -56,6 +55,68 @@ public class SqlMain {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	/**
+	 * Does a default query with PreparedStatement<br>
+	 * the first '?' will be InsertOne
+	 * 
+	 * @param statement
+	 * @return ResultSet
+	 */
+	protected ResultSet query(String statement, String insertOne){
+		try {
+			//Create statement
+			PreparedStatement stmt = conn.prepareStatement(statement);
+			stmt.setString(1, insertOne);
+			return stmt.executeQuery();
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * does a DDL query without PreparedStatement
+	 * @param statement
+	 */
+	protected void queryDDL(String statement) {
+		try {
+			//Create statement
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(statement);
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}		
+	}
+	
+	/**
+	 * Does a DDL query with a PreparedStatement<br>
+	 * the first '?' will be insertOne
+	 * @param statement
+	 * @param insertOne
+	 */
+	protected void queryDDL(String statement, String insertOne) {
+		try {
+			//Create statement
+			PreparedStatement stmt = conn.prepareStatement(statement);
+			stmt.setString(1, insertOne);
+			stmt.executeUpdate();
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}
 	}
 
 	/**
