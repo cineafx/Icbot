@@ -45,7 +45,9 @@ public class MessageHandlerMain {
 			}
 
 			//gets the raw message
-			returnMessage = commandHandler.checkForCommand(messageProperties);
+			if (returnMessage == null) {
+				returnMessage = commandHandler.checkForCommand(messageProperties);
+			}
 			//TODO: do other message handling
 			
 			System.out.println(botMain.getChannelname() + " " + messageProperties.getProperty("user-name") + ": " + messageProperties.getProperty("message"));
@@ -66,7 +68,7 @@ public class MessageHandlerMain {
 		String returnMessage = null;
 
 		//ping command
-		if (checkProperty(property,"message", new String[] {"!icping","!pingall"}) && checkProperty(property,"user-name", botMain.getAdmin())) {
+		if (checkProperty(property, "message", "!icping", "!pingall") && checkProperty(property,"user-name", botMain.getAdmin())) {
 			returnMessage = messageProperties.getProperty("user-name") + ", sure LuL";
 		}
 
@@ -94,27 +96,13 @@ public class MessageHandlerMain {
 
 	/**
 	 * Returns whether a value of the current property name is equals to the value to check for<br>
-	 * property names can be found here: {@link com.cineafx.icbot.bot.messageHandler.MessageHandlerMain#getMessageProperties(String)}
-	 * 
-	 * @param propertyName
-	 * @param valueToCheckFor
-	 * @return boolean
-	 */
-	public boolean checkProperty(Properties messageProperty, String propertyName, String valueToCheckFor) {
-		return messageProperties.getProperty(propertyName).equals(valueToCheckFor);
-	}
-
-	/**
-	 * Returns whether a value of the current property name is equals to the value to check for<br>
 	 * property names can be found here: {@link com.cineafx.icbot.bot.messageHandler.MessageHandlerMain#getMessageProperties(String)}<br>
-	 * Use the following code example to create nameless String arrays<pre>
-	 * <code> checkProperty("propertyName", new String[] {"value1","value2"});</code></pre>
 	 * 
 	 * @param propertyName
-	 * @param valuesToCheckFor
+	 * @param valuesToCheckFor ...
 	 * @return boolean
 	 */
-	public boolean checkProperty(Properties messageProperty, String propertyName, String[] valuesToCheckFor) {
+	public boolean checkProperty(Properties messageProperty, String propertyName, String... valuesToCheckFor) {
 		for (String string : valuesToCheckFor) {
 			if (messageProperties.getProperty(propertyName).equals(string)) {
 				return true;
