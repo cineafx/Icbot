@@ -189,7 +189,7 @@ public class SqlMain {
 	public String[] getColumn(String table, String column) {
 		try {
 			//return amount of rows
-			String countStatement = "SELECT COUNT(" + column + ") FROM " + table + " ;";
+			String countStatement = "SELECT COUNT(" + column + ") FROM " + table + ";";
 			ResultSet rsCount = this.query(countStatement);
 			rsCount.next();
 			int rowAmount = rsCount.getInt(1);

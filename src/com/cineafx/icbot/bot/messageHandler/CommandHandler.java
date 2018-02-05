@@ -33,14 +33,10 @@ public class CommandHandler {
 				//is userlevel even permitted
 				if (Integer.parseInt(returnArray[2]) <= this.checkUserLevel(messageProperties)) {
 					//check timeout
-					//TODO: implement it properly
-					if (this.checkCommandTimeout(returnArray)) {
-						
-						
+					if (this.handleCommandTimeout(returnArray)) {
 						sqlcommands.updateTimesUsed(returnArray[0]);
 						return returnArray[1];
 					}
-					
 				}
 			}
 		}
@@ -53,9 +49,17 @@ public class CommandHandler {
 	 * @param returnArray
 	 * @return is allowed 
 	 */
-	private boolean checkCommandTimeout(String[] returnArray) {
-	
-		return true;
+	private boolean handleCommandTimeout(String[] returnArray) {
+		//get last time command was used (never defaults to 0)
+		Long lastTimeUsed = Long.parseLong(timeoutProperties.getProperty(returnArray[0], "0"));
+		//check the property
+		if ((lastTimeUsed + Long.parseLong(returnArray[3]) * 1000) < System.currentTimeMillis()) {
+			//update timeout
+			timeoutProperties.setProperty(returnArray[0], "" + System.currentTimeMillis());
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
