@@ -9,10 +9,12 @@ public class CommandHandler {
 	
 	private BotMain botMain;
 	private SqlCommands sqlcommands;
+	private Properties timeoutProperties;
 
 	public CommandHandler(BotMain botMain) {
 		this.botMain = botMain;
 		sqlcommands = new SqlCommands(botMain.getSqlServername(), botMain.getSqlUsername(), botMain.getSqlPassword(), botMain.getSqlDbname());
+		timeoutProperties = new Properties();
 	}
 
 	/**
@@ -32,7 +34,8 @@ public class CommandHandler {
 				if (Integer.parseInt(returnArray[2]) <= this.checkUserLevel(messageProperties)) {
 					//check timeout
 					//TODO: implement it properly
-					if (true) {
+					if (this.checkCommandTimeout(returnArray)) {
+						
 						
 						sqlcommands.updateTimesUsed(returnArray[0]);
 						return returnArray[1];
@@ -42,6 +45,17 @@ public class CommandHandler {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Checks if the timeout of the command is already over
+	 * 
+	 * @param returnArray
+	 * @return is allowed 
+	 */
+	private boolean checkCommandTimeout(String[] returnArray) {
+	
+		return true;
 	}
 
 	/**

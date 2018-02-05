@@ -18,27 +18,30 @@ public final class SqlCommands extends SqlMain {
 	 * @param channel
 	 * @return String[]
 	 * <ol start = "0">
+	 *  <li>command ID </li>
 	 * 	<li>response</li>
 	 * 	<li>userlevel</li>
 	 * 	<li>timeout</li>
-	 *  <li>lastUsed</li>
 	 * 	<li>timesUsed</li>
 	 * </ol>
 	 */
 	public String[] getCommand(String command, String channel) {
 		try {
 			
-			//TODO: fix / test the order of commands
+			//If channel starts with '#' cut it off
+			if (channel.startsWith("#")) {
+ 				channel = channel.substring(1, channel.length());
+			}
+			
 			//TODO: write explanation
-			String statement = "SELECT ID, response, userlevel, timeout, timesUsed "
-					+ "FROM commands "
+			String statement = "SELECT DISTINCT commands.ID, response, userlevel, timeout, timesUsed "
+					+ "FROM commands, channels "
 					+ "WHERE command = ? "
-					+ "AND (channel = '" + channel + "' OR channel IS NULL)"
+					+ "AND (channel IS NULL OR channels.ID = commands.channel AND channels.channelName = ? ) "
 					+ "ORDER BY channel DESC, ID DESC;";
 
-			ResultSet rs = super.query(statement, command);
-
-			if (rs.next()) {
+			ResultSet rs = super.query(statement, command, channel);
+			if (rs.first()) {
 				//create returnArray
 				String[] returnArray = new String[5];
 				//fill array with content of row

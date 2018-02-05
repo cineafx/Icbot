@@ -35,49 +35,87 @@ public class SqlMain {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
-	 * Does a default query without PreparedStatement
+	 * Executes a select query<br>
+	 * If no params are given a default query will be done<br>
+	 * if params are given a prepared statement will be included
 	 * 
 	 * @param statement
+	 * @param params
 	 * @return ResultSet
 	 */
-	protected ResultSet query(String statement){
-		try {
-			//Create statement
-			Statement stmt = conn.createStatement();
-			return stmt.executeQuery(statement);
-		}catch(SQLException se){
-			//Handle errors for JDBC
-			se.printStackTrace();
-		}catch(Exception e){
-			//Handle errors for Class.forName
-			e.printStackTrace();
+	protected ResultSet query(String statement, String... params) {
+		if (params != null) {
+			try {
+				//Create statement
+				PreparedStatement stmt = conn.prepareStatement(statement);
+				for (int i = 0; i < params.length; i++) {
+					stmt.setString(i+1, params[i]);
+				}
+				return stmt.executeQuery();
+			}catch(SQLException se){
+				//Handle errors for JDBC
+				se.printStackTrace();
+			}catch(Exception e){
+				//Handle errors for Class.forName
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				//Create statement
+				Statement stmt = conn.createStatement();
+				return stmt.executeQuery(statement);
+			}catch(SQLException se){
+				//Handle errors for JDBC
+				se.printStackTrace();
+			}catch(Exception e){
+				//Handle errors for Class.forName
+				e.printStackTrace();
+			}		
 		}
+	
 		return null;
 	}
 	
 	/**
-	 * Does a default query with PreparedStatement<br>
-	 * the first '?' will be InsertOne
+	 * Executes a DDL query<br>
+	 * If no params are given a default query will be done<br>
+	 * if params are given a prepared statement will be included
 	 * 
 	 * @param statement
+	 * @param params
 	 * @return ResultSet
 	 */
-	protected ResultSet query(String statement, String insertOne){
-		try {
-			//Create statement
-			PreparedStatement stmt = conn.prepareStatement(statement);
-			stmt.setString(1, insertOne);
-			return stmt.executeQuery();
-		}catch(SQLException se){
-			//Handle errors for JDBC
-			se.printStackTrace();
-		}catch(Exception e){
-			//Handle errors for Class.forName
-			e.printStackTrace();
+	protected void queryDDL(String statement, String... params) {
+		if (params != null) {
+			try {
+				//Create statement
+				PreparedStatement stmt = conn.prepareStatement(statement);
+				for (int i = 0; i < params.length; i++) {
+					stmt.setString(i+1, params[i]);
+				}
+				stmt.executeUpdate();
+			}catch(SQLException se){
+				//Handle errors for JDBC
+				se.printStackTrace();
+			}catch(Exception e){
+				//Handle errors for Class.forName
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				//Create statement
+				Statement stmt = conn.createStatement();
+				stmt.executeUpdate(statement);
+			}catch(SQLException se){
+				//Handle errors for JDBC
+				se.printStackTrace();
+			}catch(Exception e){
+				//Handle errors for Class.forName
+				e.printStackTrace();
+			}	
 		}
-		return null;
 	}
 	
 	/**
@@ -97,27 +135,6 @@ public class SqlMain {
 			e.printStackTrace();
 		}		
 	}
-	
-	/**
-	 * Does a DDL query with a PreparedStatement<br>
-	 * the first '?' will be insertOne
-	 * @param statement
-	 * @param insertOne
-	 */
-	protected void queryDDL(String statement, String insertOne) {
-		try {
-			//Create statement
-			PreparedStatement stmt = conn.prepareStatement(statement);
-			stmt.setString(1, insertOne);
-			stmt.executeUpdate();
-		}catch(SQLException se){
-			//Handle errors for JDBC
-			se.printStackTrace();
-		}catch(Exception e){
-			//Handle errors for Class.forName
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Retrieves full row depending on row index (starting at 0)
@@ -131,9 +148,9 @@ public class SqlMain {
 			//returns amount of columns
 			String countStatement = "SELECT count(*) "
 					+ "FROM INFORMATION_SCHEMA.COLUMNS "
-					+ "WHERE table_schema = '" + this.dbname + "' "
-					+ "AND table_name = '" + table + "';";
-			ResultSet rsCount = this.query(countStatement);
+					+ "WHERE table_schema = ? "
+					+ "AND table_name = ?;";
+			ResultSet rsCount = this.query(countStatement, this.dbname, table);
 			rsCount.next();
 			//get first (and only) result
 			int columnAmount = rsCount.getInt(1);
@@ -161,7 +178,10 @@ public class SqlMain {
 	}
 
 	/**
-	 * Get a full column from one attribute
+	 * Get a full column from one attribute<br>
+	 * <b>DOES NOT USE PREPARED STATEMENTS!!!<br>
+	 * DO NOT LET THE USER DO ANY OF THESE INPUTS</b><br>
+	 * 
 	 * @param table
 	 * @param column
 	 * @return String[]
@@ -169,7 +189,7 @@ public class SqlMain {
 	public String[] getColumn(String table, String column) {
 		try {
 			//return amount of rows
-			String countStatement = "SELECT count(" + column + ") FROM " + table + ";";
+			String countStatement = "SELECT COUNT(" + column + ") FROM " + table + " ;";
 			ResultSet rsCount = this.query(countStatement);
 			rsCount.next();
 			int rowAmount = rsCount.getInt(1);
