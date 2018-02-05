@@ -9,7 +9,8 @@ public class MessageHandlerMain {
 	//classes / objects
 	private BotMain botMain;
 	private PropertieHandler propertiehandler;
-	
+	private CommandHandler commandHandler;
+
 	//other
 	private Properties messageProperties = new Properties();
 	private String returnMessage;
@@ -17,62 +18,77 @@ public class MessageHandlerMain {
 	public MessageHandlerMain(BotMain botMain) {
 		this.botMain = botMain;
 		propertiehandler = new PropertieHandler(botMain);
+		commandHandler = new CommandHandler(botMain);
 	}
-	
+
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 */
 	public String handleMessage(String input){
 		returnMessage = null;
-		
+
 		//generates messageProperties from in incoming line
 		messageProperties = propertiehandler.getMessageProperties(input);
 
-		
-		if (messageProperties != null) {
-			//create a message object which is easier to use than messageProperties.getProperty("X");
-			//message = new Message(messageProperties);
-			//Prints out #channel user-name: message
-			//System.out.println(message.getChannel()+ " " + message.getUserName() + ": " + message.getMessage());
 
-			/*
-			if (message.getMessage().contains("i c ") || message.getMessage().endsWith("i c")) {
-				send("miniW ");
-			}
-			 */
+		if (messageProperties != null) {
+
+
+			//TODO: fix the checkForPing and checkForShutdown messages			
 			if (returnMessage == null) {
 				returnMessage = checkForPing(messageProperties);
 			}
 			if (returnMessage == null) {
 				returnMessage = checkForShutdown(messageProperties);
 			}
+
+			//gets the raw message
+			returnMessage = commandHandler.checkForCommand(messageProperties);
+			//TODO: do other message handling
 			
 			System.out.println(botMain.getChannelname() + " " + messageProperties.getProperty("user-name") + ": " + messageProperties.getProperty("message"));
 
 		}
-		
-		
+
+
 		return returnMessage; 
 	}
-	
+
+	/**
+	 * returns the appropriate message for the ping commands or NULL
+	 * 
+	 * @param property
+	 * @return returnString
+	 */
 	private String checkForPing(Properties property) {
 		String returnMessage = null;
-		
+
 		//ping command
-			if (checkProperty(property,"message", new String[] {"!icping","!pingall"}) && checkProperty(property,"user-name", botMain.getAdmin())) {
-				returnMessage = messageProperties.getProperty("user-name") + ", sure LuL";
-			}
-			
+		if (checkProperty(property,"message", new String[] {"!icping","!pingall"}) && checkProperty(property,"user-name", botMain.getAdmin())) {
+			returnMessage = messageProperties.getProperty("user-name") + ", sure LuL";
+		}
+
 		return returnMessage;
 	}
-	
+
+	/**
+	 * returns the appropriate message for the quit commands or NULL
+	 * 
+	 * @param property
+	 * @return returnString
+	 */
 	private String checkForShutdown(Properties property) {
 		String returnMessage = null;
-		
+
 		//check for shutdown command
 		if (checkProperty(property, "message", "!icquit") && checkProperty(property, "user-name", botMain.getAdmin())) {
 			returnMessage = messageProperties.getProperty("user-name") + ", " + "Shutting down...";
 			//set isRunning to false and "end" the queue which will terminate the program
 			botMain.setRunning(false);
 		}
-		
+
 		return returnMessage;
 	}
 

@@ -103,7 +103,7 @@ public class PropertieHandler {
 
 		} else if (messageProperties.getProperty("messagetype","NULL").equals("USERSTATE")) {
 			//update things like the mod status of the bot			
-			usercheck(messageProperties);
+			userSelfCheck(messageProperties);
 		} 
 		//return null in case it isn't "PRIVMSG"
 		return null;
@@ -143,11 +143,11 @@ public class PropertieHandler {
 	}
 
 	/**
-	 * checks the user for things different badges / unserstatus
+	 * checks the own account for things different badges / unserstatus
 	 * (broadcaster, mod, etc ...)
 	 * @param messageProperties
 	 */
-	private void usercheck(Properties messageProperties) {
+	private void userSelfCheck(Properties messageProperties) {
 		//is broadcaster or mod
 		if (messageProperties.getProperty("@badges","NULL").contains("broadcaster") || messageProperties.getProperty("mod","NULL").equals("1")) {
 			botMain.setBotModstate(true);

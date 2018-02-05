@@ -9,7 +9,6 @@ public class SqlMain {
 	private String dbname;
 
 	private Connection conn;
-	private Statement stmt;
 
 	public SqlMain(String servername, String username, String password, String dbname) {
 		this.dbUrl  = "jdbc:mysql://" + servername + "/" + dbname;
@@ -25,8 +24,7 @@ public class SqlMain {
 			System.out.println("Connecting to database...");
 			conn = DriverManager.getConnection(dbUrl,user,pass);
 
-			//Create statement
-			stmt = conn.createStatement();
+
 
 			System.out.println("Connected!");
 		}catch(SQLException se){
@@ -36,30 +34,108 @@ public class SqlMain {
 			//Handle errors for Class.forName
 			e.printStackTrace();
 		}
-
 	}
-
+	
 	/**
-	 * Default query method
+	 * Executes a select query<br>
+	 * If no params are given a default query will be done<br>
+	 * if params are given a prepared statement will be included
 	 * 
 	 * @param statement
+	 * @param params
 	 * @return ResultSet
 	 */
-	protected ResultSet query(String statement){
+	protected ResultSet query(String statement, String... params) {
+		if (params != null) {
+			try {
+				//Create statement
+				PreparedStatement stmt = conn.prepareStatement(statement);
+				for (int i = 0; i < params.length; i++) {
+					stmt.setString(i+1, params[i]);
+				}
+				return stmt.executeQuery();
+			}catch(SQLException se){
+				//Handle errors for JDBC
+				se.printStackTrace();
+			}catch(Exception e){
+				//Handle errors for Class.forName
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				//Create statement
+				Statement stmt = conn.createStatement();
+				return stmt.executeQuery(statement);
+			}catch(SQLException se){
+				//Handle errors for JDBC
+				se.printStackTrace();
+			}catch(Exception e){
+				//Handle errors for Class.forName
+				e.printStackTrace();
+			}		
+		}
+	
+		return null;
+	}
+	
+	/**
+	 * Executes a DDL query<br>
+	 * If no params are given a default query will be done<br>
+	 * if params are given a prepared statement will be included
+	 * 
+	 * @param statement
+	 * @param params
+	 * @return ResultSet
+	 */
+	protected void queryDDL(String statement, String... params) {
+		if (params != null) {
+			try {
+				//Create statement
+				PreparedStatement stmt = conn.prepareStatement(statement);
+				for (int i = 0; i < params.length; i++) {
+					stmt.setString(i+1, params[i]);
+				}
+				stmt.executeUpdate();
+			}catch(SQLException se){
+				//Handle errors for JDBC
+				se.printStackTrace();
+			}catch(Exception e){
+				//Handle errors for Class.forName
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				//Create statement
+				Statement stmt = conn.createStatement();
+				stmt.executeUpdate(statement);
+			}catch(SQLException se){
+				//Handle errors for JDBC
+				se.printStackTrace();
+			}catch(Exception e){
+				//Handle errors for Class.forName
+				e.printStackTrace();
+			}	
+		}
+	}
+	
+	/**
+	 * does a DDL query without PreparedStatement
+	 * @param statement
+	 */
+	protected void queryDDL(String statement) {
 		try {
-			//return query answer
-			return stmt.executeQuery(statement);
+			//Create statement
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(statement);
 		}catch(SQLException se){
 			//Handle errors for JDBC
 			se.printStackTrace();
 		}catch(Exception e){
 			//Handle errors for Class.forName
 			e.printStackTrace();
-		}
-		return null;
+		}		
 	}
 
-	//TODO: test this at some point ... please
 	/**
 	 * Retrieves full row depending on row index (starting at 0)
 	 * 
@@ -72,9 +148,9 @@ public class SqlMain {
 			//returns amount of columns
 			String countStatement = "SELECT count(*) "
 					+ "FROM INFORMATION_SCHEMA.COLUMNS "
-					+ "WHERE table_schema = '" + this.dbname + "' "
-					+ "AND table_name = '" + table + "';";
-			ResultSet rsCount = this.query(countStatement);
+					+ "WHERE table_schema = ? "
+					+ "AND table_name = ?;";
+			ResultSet rsCount = this.query(countStatement, this.dbname, table);
 			rsCount.next();
 			//get first (and only) result
 			int columnAmount = rsCount.getInt(1);
@@ -88,7 +164,7 @@ public class SqlMain {
 			rs.next();
 			//fill array with content of row
 			for (int i = 0; i < columnAmount; i++) {
-				returnArray[i] = rs.getString(i);
+				returnArray[i] = rs.getString(i+1);
 			}
 			return returnArray;
 		}catch(SQLException se){
@@ -102,7 +178,10 @@ public class SqlMain {
 	}
 
 	/**
-	 * Get a full column from one attribute
+	 * Get a full column from one attribute<br>
+	 * <b>DOES NOT USE PREPARED STATEMENTS!!!<br>
+	 * DO NOT LET THE USER DO ANY OF THESE INPUTS</b><br>
+	 * 
 	 * @param table
 	 * @param column
 	 * @return String[]
@@ -110,7 +189,7 @@ public class SqlMain {
 	public String[] getColumn(String table, String column) {
 		try {
 			//return amount of rows
-			String countStatement = "SELECT count(" + column + ") FROM " + table + ";";
+			String countStatement = "SELECT COUNT(" + column + ") FROM " + table + ";";
 			ResultSet rsCount = this.query(countStatement);
 			rsCount.next();
 			int rowAmount = rsCount.getInt(1);
@@ -139,23 +218,4 @@ public class SqlMain {
 		return null;
 	}
 
-	/**
-	 * get the current channels from the database
-	 * 
-	 * @return String[]
-	 */
-	public String[] getChannels() {
-
-		//query from the table channels the attribute channelName
-		String[] channels = this.getColumn("channels", "channelName");
-
-		//if channelname doesn't start with # add one
-		for (int i = 0; i < channels.length; i++) {
-			if (!channels[i].startsWith("#")) {
-				channels[i] = "#" + channels[i];
-			}
-		}		
-
-		return channels;
-	}
 }
