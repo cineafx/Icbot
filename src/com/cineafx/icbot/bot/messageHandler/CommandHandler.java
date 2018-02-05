@@ -28,6 +28,8 @@ public class CommandHandler {
 		if (!firstWord.isEmpty()) {
 			//gets an array of responses for the 
 			returnArray = sqlcommands.getCommand(firstWord, botMain.getChannelname());
+			
+				
 			//no command from input string
 			if (returnArray != null) {
 				//is userlevel even permitted
@@ -35,7 +37,7 @@ public class CommandHandler {
 					//check timeout
 					if (this.handleCommandTimeout(returnArray)) {
 						sqlcommands.updateTimesUsed(returnArray[0]);
-						return returnArray[1];
+						return checkForInserts(returnArray, messageProperties);
 					}
 				}
 			}
@@ -92,5 +94,16 @@ public class CommandHandler {
 			userlevel = 1;
 		} 
 		return userlevel;
+	}
+
+	/**
+	 * This function check for custom parameter in commands still WIP / TODO
+	 * @param returnArray
+	 * @param messageProperties
+	 * @return returnString
+	 */
+	private String checkForInserts(String[] returnArray, Properties messageProperties) {
+		
+		return returnArray[1];
 	}
 }

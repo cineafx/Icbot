@@ -35,8 +35,7 @@ public class MessageHandlerMain {
 
 		if (messageProperties != null) {
 
-
-			//TODO: fix the checkForPing and checkForShutdown messages			
+	
 			if (returnMessage == null) {
 				returnMessage = checkForPing(messageProperties);
 			}
@@ -48,12 +47,10 @@ public class MessageHandlerMain {
 			if (returnMessage == null) {
 				returnMessage = commandHandler.checkForCommand(messageProperties);
 			}
-			//TODO: do other message handling
 			
 			System.out.println(botMain.getChannelname() + " " + messageProperties.getProperty("user-name") + ": " + messageProperties.getProperty("message"));
 
 		}
-
 
 		return returnMessage; 
 	}
