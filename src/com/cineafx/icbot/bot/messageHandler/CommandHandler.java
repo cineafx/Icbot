@@ -137,7 +137,6 @@ public class CommandHandler {
 			
 			return returnString;
 		}
-		
 		return returnArray[1];
 	}
 }

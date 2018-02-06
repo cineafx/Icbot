@@ -32,7 +32,6 @@ public class MessageHandlerMain {
 		//generates messageProperties from in incoming line
 		messageProperties = propertiehandler.getMessageProperties(input);
 
-
 		if (messageProperties != null) {
 
 			if (returnMessage == null) {
@@ -45,9 +44,7 @@ public class MessageHandlerMain {
 			}
 			
 			System.out.println(botMain.getChannelname() + " " + messageProperties.getProperty("user-name") + ": " + messageProperties.getProperty("message"));
-
 		}
-
 		return returnMessage; 
 	}
 

@@ -83,11 +83,6 @@ public class Chat implements Runnable {
 							if (botMain.getBotModstate()) {
 								sleeptime = 350;
 							}
-							/*
-							if (queueMessage.size() > 20) {
-								sleeptime = sleeptime * 2;
-							}
-							 */
 							Thread.sleep(sleeptime);
 						} else {
 							Thread.sleep(10);

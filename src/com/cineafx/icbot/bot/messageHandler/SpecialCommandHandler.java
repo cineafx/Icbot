@@ -33,7 +33,6 @@ public class SpecialCommandHandler {
 		} else {
 			uptime = String.format("%d days, %d hours, %d min, %d sec", days, hours, minutes, seconds);
 		}
-				
 		return uptime;
 	}
 	
