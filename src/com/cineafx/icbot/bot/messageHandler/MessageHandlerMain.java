@@ -46,6 +46,7 @@ public class MessageHandlerMain {
 			//gets the raw message
 			if (returnMessage == null) {
 				returnMessage = commandHandler.checkForCommand(messageProperties);
+
 			}
 			
 			System.out.println(botMain.getChannelname() + " " + messageProperties.getProperty("user-name") + ": " + messageProperties.getProperty("message"));

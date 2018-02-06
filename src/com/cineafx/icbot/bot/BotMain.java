@@ -13,6 +13,8 @@ public class BotMain {
 	private String sqlUsername;
 	private String sqlPassword;
 	private String sqlDbname;
+	
+	private long lastCommandCacheUpdate = 0;
 
 	public Connection conn;
 
@@ -176,6 +178,24 @@ public class BotMain {
 	 */
 	public String getSqlDbname() {
 		return sqlDbname;
+	}
+
+	/**
+	 * Returns last time the command cache was updated
+	 *
+	 * @return isMod
+	 */	
+	public long getlastCommandCacheUpdate() {
+		return lastCommandCacheUpdate;
+	}
+
+	/**
+	 * Updates the time the command cache was last updated to now 
+	 * 
+	 * @param modstate
+	 */
+	public void updateLastCommandCacheUpdate() {
+		this.lastCommandCacheUpdate = System.currentTimeMillis();
 	}
 
 }
