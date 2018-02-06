@@ -15,6 +15,7 @@ public class Chat implements Runnable {
 	private Queue<String> queueMessage;
 	private String line = "";
 	private boolean queuePause;
+	private boolean addSpecialChar = false;
 
 	public Chat(BotMain botMain, Connection conn) {
 		this.botMain = botMain;
@@ -71,6 +72,11 @@ public class Chat implements Runnable {
 						//if queue is not empty and the queue is not paused
 						if (!queueMessage.isEmpty() && !queuePause) {
 							String message = queueMessage.poll();
+							if (addSpecialChar) {
+								//This will make sure the "Message send in the last 30 seconds" stuff doesn't prevent from posting
+								message = message + " \u206D";
+							}
+							addSpecialChar = !addSpecialChar;
 							System.out.println("Send:" + botMain.getChannelname() + ": " + message);
 							sendRawLine("PRIVMSG " + botMain.getChannelname() + " :" + message + " \r\n");
 							int sleeptime = 1550;

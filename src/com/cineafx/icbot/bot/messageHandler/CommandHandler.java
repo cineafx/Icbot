@@ -3,6 +3,7 @@ package com.cineafx.icbot.bot.messageHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import com.cineafx.icbot.bot.BotMain;
 import com.cineafx.icbot.sql.SqlCommands;
@@ -10,6 +11,7 @@ import com.cineafx.icbot.sql.SqlCommands;
 public class CommandHandler {
 	
 	private BotMain botMain;
+	SpecialCommandHandler specialCommandHandler;
 	private SqlCommands sqlcommands;
 	private Properties timeoutProperties;
 	
@@ -17,6 +19,7 @@ public class CommandHandler {
 
 	public CommandHandler(BotMain botMain) {
 		this.botMain = botMain;
+		specialCommandHandler = new SpecialCommandHandler();
 		sqlcommands = new SqlCommands(botMain.getSqlServername(), botMain.getSqlUsername(), botMain.getSqlPassword(), botMain.getSqlDbname());
 		timeoutProperties = new Properties();
 	}
@@ -51,9 +54,7 @@ public class CommandHandler {
 						}
 					}
 				}
-			}
-			
-				
+			}	
 		}
 		return null;
 	}
@@ -116,6 +117,26 @@ public class CommandHandler {
 	 * @return returnString
 	 */
 	private String checkForInserts(String[] returnArray, Properties messageProperties) {
+		if (returnArray[1].contains("${")) {
+			String returnString = returnArray[1];
+
+			//${user}
+			if (returnString.toLowerCase().contains("${user}")) {
+				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${user}"), messageProperties.getProperty("user-name", "ERROR"));
+			}
+			
+			//${channel}
+			if (returnString.toLowerCase().contains("${channel}")) {
+				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${channel}"), messageProperties.getProperty("channel", "ERROR"));
+			}
+			
+			//${botuptime}
+			if (returnString.toLowerCase().contains("${botuptime}")) {
+				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${botuptime}"), specialCommandHandler.botUpTime());
+			}
+			
+			return returnString;
+		}
 		
 		return returnArray[1];
 	}
