@@ -32,13 +32,8 @@ public class MessageHandlerMain {
 		//generates messageProperties from in incoming line
 		messageProperties = propertiehandler.getMessageProperties(input);
 
-
 		if (messageProperties != null) {
 
-	
-			if (returnMessage == null) {
-				returnMessage = checkForPing(messageProperties);
-			}
 			if (returnMessage == null) {
 				returnMessage = checkForShutdown(messageProperties);
 			}
@@ -46,31 +41,11 @@ public class MessageHandlerMain {
 			//gets the raw message
 			if (returnMessage == null) {
 				returnMessage = commandHandler.checkForCommand(messageProperties);
-
 			}
 			
 			System.out.println(botMain.getChannelname() + " " + messageProperties.getProperty("user-name") + ": " + messageProperties.getProperty("message"));
-
 		}
-
 		return returnMessage; 
-	}
-
-	/**
-	 * returns the appropriate message for the ping commands or NULL
-	 * 
-	 * @param property
-	 * @return returnString
-	 */
-	private String checkForPing(Properties property) {
-		String returnMessage = null;
-
-		//ping command
-		if (checkPropertyStart(property, "message", "!icping", "!pingall") && checkProperty(property,"user-name", botMain.getAdmin())) {
-			returnMessage = messageProperties.getProperty("user-name") + ", sure LuL";
-		}
-
-		return returnMessage;
 	}
 
 	/**
