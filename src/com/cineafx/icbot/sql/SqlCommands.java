@@ -27,7 +27,6 @@ public final class SqlCommands extends SqlMain {
 	 */
 	public String[] getCommand(String command, String channel) {
 		try {
-			
 			//If channel starts with '#' cut it off
 			if (channel.startsWith("#")) {
  				channel = channel.substring(1, channel.length());
@@ -61,6 +60,7 @@ public final class SqlCommands extends SqlMain {
 			//Handle errors for Class.forName
 			e.printStackTrace();
 		}
+
 		return null;	
 	}
 
