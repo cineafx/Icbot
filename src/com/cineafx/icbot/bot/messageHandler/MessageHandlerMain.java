@@ -35,8 +35,7 @@ public class MessageHandlerMain {
 
 		if (messageProperties != null) {
 
-
-			//TODO: fix the checkForPing and checkForShutdown messages			
+	
 			if (returnMessage == null) {
 				returnMessage = checkForPing(messageProperties);
 			}
@@ -47,13 +46,12 @@ public class MessageHandlerMain {
 			//gets the raw message
 			if (returnMessage == null) {
 				returnMessage = commandHandler.checkForCommand(messageProperties);
+
 			}
-			//TODO: do other message handling
 			
 			System.out.println(botMain.getChannelname() + " " + messageProperties.getProperty("user-name") + ": " + messageProperties.getProperty("message"));
 
 		}
-
 
 		return returnMessage; 
 	}
@@ -68,7 +66,7 @@ public class MessageHandlerMain {
 		String returnMessage = null;
 
 		//ping command
-		if (checkProperty(property, "message", "!icping", "!pingall") && checkProperty(property,"user-name", botMain.getAdmin())) {
+		if (checkPropertyStart(property, "message", "!icping", "!pingall") && checkProperty(property,"user-name", botMain.getAdmin())) {
 			returnMessage = messageProperties.getProperty("user-name") + ", sure LuL";
 		}
 
@@ -85,7 +83,7 @@ public class MessageHandlerMain {
 		String returnMessage = null;
 
 		//check for shutdown command
-		if (checkProperty(property, "message", "!icquit") && checkProperty(property, "user-name", botMain.getAdmin())) {
+		if (checkPropertyStart(property, "message", "!icquit") && checkProperty(property, "user-name", botMain.getAdmin())) {
 			returnMessage = messageProperties.getProperty("user-name") + ", " + "Shutting down...";
 			//set isRunning to false and "end" the queue which will terminate the program
 			botMain.setRunning(false);
@@ -95,7 +93,7 @@ public class MessageHandlerMain {
 	}
 
 	/**
-	 * Returns whether a value of the current property name is equals to the value to check for<br>
+	 * Returns whether a value of the current property name is equals to the values to check for<br>
 	 * property names can be found here: {@link com.cineafx.icbot.bot.messageHandler.MessageHandlerMain#getMessageProperties(String)}<br>
 	 * 
 	 * @param propertyName
@@ -105,6 +103,24 @@ public class MessageHandlerMain {
 	public boolean checkProperty(Properties messageProperty, String propertyName, String... valuesToCheckFor) {
 		for (String string : valuesToCheckFor) {
 			if (messageProperties.getProperty(propertyName).equals(string)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	/**
+	 * Returns whether a value of the current property name starts with the values to check for<br>
+	 * property names can be found here: {@link com.cineafx.icbot.bot.messageHandler.MessageHandlerMain#getMessageProperties(String)}<br>
+	 * 
+	 * @param propertyName
+	 * @param valuesToCheckFor ...
+	 * @return boolean
+	 */
+	public boolean checkPropertyStart(Properties messageProperty, String propertyName, String... valuesToCheckFor) {
+		for (String string : valuesToCheckFor) {
+			if (messageProperties.getProperty(propertyName).startsWith(string)) {
 				return true;
 			}
 		}

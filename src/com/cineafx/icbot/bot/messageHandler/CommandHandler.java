@@ -1,5 +1,7 @@
 package com.cineafx.icbot.bot.messageHandler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import com.cineafx.icbot.bot.BotMain;
@@ -10,6 +12,8 @@ public class CommandHandler {
 	private BotMain botMain;
 	private SqlCommands sqlcommands;
 	private Properties timeoutProperties;
+	
+	private List<String> commandCache = new ArrayList<String>();
 
 	public CommandHandler(BotMain botMain) {
 		this.botMain = botMain;
@@ -26,19 +30,30 @@ public class CommandHandler {
 		String firstWord = messageProperties.getProperty("message").split(" ",2)[0];
 		String returnArray[] = new String[4];
 		if (!firstWord.isEmpty()) {
-			//gets an array of responses for the 
-			returnArray = sqlcommands.getCommand(firstWord, botMain.getChannelname());
-			//no command from input string
-			if (returnArray != null) {
-				//is userlevel even permitted
-				if (Integer.parseInt(returnArray[2]) <= this.checkUserLevel(messageProperties)) {
-					//check timeout
-					if (this.handleCommandTimeout(returnArray)) {
-						sqlcommands.updateTimesUsed(returnArray[0]);
-						return returnArray[1];
+			
+			//If 30 seconds have passed since the latest command update refresh the local command cache list
+			if (botMain.getlastCommandCacheUpdate() + 60000 < System.currentTimeMillis()) {
+				commandCache = sqlcommands.updateCommandCache();
+				botMain.updateLastCommandCacheUpdate();
+			}
+			
+			if (commandCache.contains(firstWord)) {
+				returnArray = sqlcommands.getCommand(firstWord, botMain.getChannelname());
+
+				//no command from input string
+				if (returnArray != null) {
+					//is userlevel even permitted
+					if (Integer.parseInt(returnArray[2]) <= this.checkUserLevel(messageProperties)) {
+						//check timeout
+						if (this.handleCommandTimeout(returnArray)) {
+							sqlcommands.updateTimesUsed(returnArray[0]);
+							return checkForInserts(returnArray, messageProperties);
+						}
 					}
 				}
 			}
+			
+				
 		}
 		return null;
 	}
@@ -92,5 +107,16 @@ public class CommandHandler {
 			userlevel = 1;
 		} 
 		return userlevel;
+	}
+
+	/**
+	 * This function check for custom parameter in commands still WIP / TODO
+	 * @param returnArray
+	 * @param messageProperties
+	 * @return returnString
+	 */
+	private String checkForInserts(String[] returnArray, Properties messageProperties) {
+		
+		return returnArray[1];
 	}
 }

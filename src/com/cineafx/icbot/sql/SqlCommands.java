@@ -2,6 +2,8 @@ package com.cineafx.icbot.sql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class SqlCommands extends SqlMain {
 
@@ -27,7 +29,6 @@ public final class SqlCommands extends SqlMain {
 	 */
 	public String[] getCommand(String command, String channel) {
 		try {
-			
 			//If channel starts with '#' cut it off
 			if (channel.startsWith("#")) {
  				channel = channel.substring(1, channel.length());
@@ -61,6 +62,7 @@ public final class SqlCommands extends SqlMain {
 			//Handle errors for Class.forName
 			e.printStackTrace();
 		}
+
 		return null;	
 	}
 
@@ -74,4 +76,26 @@ public final class SqlCommands extends SqlMain {
 				+ "WHERE ID = '" + id + "';");
 	}
 
+	public List<String> updateCommandCache() {
+		try {
+		String statement = "SELECT command FROM commands;";
+		List<String> returnList = new ArrayList<String>();
+			
+			ResultSet rs = super.query(statement);
+			while (rs.next()) {
+				returnList.add(rs.getString(1));
+			}
+			
+			return returnList;
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 }

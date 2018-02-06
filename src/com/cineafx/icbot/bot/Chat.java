@@ -135,8 +135,6 @@ public class Chat implements Runnable {
 			while ((line = conn.reader().readLine()) != null) {
 					//System.out.println("From: " + botMain.getChannelname() + ": " + line);
 					if (line.startsWith("PING")) {
-						//String extra = line.split("[ ;]", 2)[1];
-						//sendRawLine("PONG " + extra);
 						sendRawLine("PONG tmi.twitch.tv");
 						System.out.println("++++++++++Ping from Twitch answered by " + botMain.getChannelname());
 					} else if (line.contains("PONG")) {
