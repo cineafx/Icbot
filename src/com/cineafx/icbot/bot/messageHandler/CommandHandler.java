@@ -3,6 +3,7 @@ package com.cineafx.icbot.bot.messageHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.cineafx.icbot.bot.BotMain;
@@ -16,6 +17,8 @@ public class CommandHandler {
 	private Properties timeoutProperties;
 	
 	private List<String> commandCache = new ArrayList<String>();
+	
+	private int maxAllowedInserts = 20;
 
 	public CommandHandler(BotMain botMain) {
 		this.botMain = botMain;
@@ -117,26 +120,43 @@ public class CommandHandler {
 	 * @return returnString
 	 */
 	private String checkForInserts(String[] returnArray, Properties messageProperties) {
-		if (returnArray[1].contains("${")) {
-			String returnString = returnArray[1];
+		String returnString = returnArray[1];
+		
+		int i = 0;
+		while (returnString.contains("${") && i < maxAllowedInserts) {
+			returnString = returnArray[1];
 
 			//${user}
 			if (returnString.toLowerCase().contains("${user}")) {
-				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${user}"), messageProperties.getProperty("user-name", "ERROR"));
+				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${user}"), 
+						messageProperties.getProperty("user-name", "ERROR"));
 			}
 			
 			//${channel}
 			if (returnString.toLowerCase().contains("${channel}")) {
-				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${channel}"), messageProperties.getProperty("channel", "ERROR"));
+				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${channel}"), 
+						messageProperties.getProperty("channel", "ERROR"));
 			}
 			
 			//${botuptime}
 			if (returnString.toLowerCase().contains("${botuptime}")) {
-				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${botuptime}"), specialCommandHandler.botUpTime());
+				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${botuptime}"), 
+						specialCommandHandler.botUpTime());
 			}
 			
-			return returnString;
+			//${url=.*}
+			if (returnString.toLowerCase().contains("${url=")) {
+				//will return the url from the ${url= XXX } command
+				Pattern pattern = Pattern.compile("(?i)" + Pattern.quote("${url=") + "(.*?)" + Pattern.quote("}"));
+				Matcher matcher = pattern.matcher(returnString);
+				matcher.find();
+				
+				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${url=") + ".*" + Pattern.quote("}"), 
+						specialCommandHandler.getFromURL(matcher.group(1)));
+			}
+			System.out.println(i + ": " + returnString);
+			i++;
 		}
-		return returnArray[1];
+		return returnString;
 	}
 }
