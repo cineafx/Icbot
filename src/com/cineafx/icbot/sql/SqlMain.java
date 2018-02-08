@@ -2,7 +2,7 @@ package com.cineafx.icbot.sql;
 
 import java.sql.*;
 
-public class SqlMain {
+public class SqlMain implements Runnable {
 	private String dbUrl;
 	private String user;
 	private String pass;
@@ -16,6 +16,11 @@ public class SqlMain {
 		this.pass = password;
 		this.dbname = dbname;
 
+		this.connectDB();
+		new Thread(this).start();
+	}
+	
+	private void connectDB() {
 		try{
 			//Register JDBC driver
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -24,12 +29,11 @@ public class SqlMain {
 			System.out.println("Connecting to database...");
 			conn = DriverManager.getConnection(dbUrl,user,pass);
 
-
-
 			System.out.println("Connected!");
 		}catch(SQLException se){
 			//Handle errors for JDBC
 			se.printStackTrace();
+			this.connectDB();
 		}catch(Exception e){
 			//Handle errors for Class.forName
 			e.printStackTrace();
@@ -57,6 +61,7 @@ public class SqlMain {
 			}catch(SQLException se){
 				//Handle errors for JDBC
 				se.printStackTrace();
+				this.connectDB();
 			}catch(Exception e){
 				//Handle errors for Class.forName
 				e.printStackTrace();
@@ -69,6 +74,7 @@ public class SqlMain {
 			}catch(SQLException se){
 				//Handle errors for JDBC
 				se.printStackTrace();
+				this.connectDB();
 			}catch(Exception e){
 				//Handle errors for Class.forName
 				e.printStackTrace();
@@ -99,6 +105,7 @@ public class SqlMain {
 			}catch(SQLException se){
 				//Handle errors for JDBC
 				se.printStackTrace();
+				this.connectDB();
 			}catch(Exception e){
 				//Handle errors for Class.forName
 				e.printStackTrace();
@@ -111,6 +118,7 @@ public class SqlMain {
 			}catch(SQLException se){
 				//Handle errors for JDBC
 				se.printStackTrace();
+				this.connectDB();
 			}catch(Exception e){
 				//Handle errors for Class.forName
 				e.printStackTrace();
@@ -130,6 +138,7 @@ public class SqlMain {
 		}catch(SQLException se){
 			//Handle errors for JDBC
 			se.printStackTrace();
+			this.connectDB();
 		}catch(Exception e){
 			//Handle errors for Class.forName
 			e.printStackTrace();
@@ -216,6 +225,26 @@ public class SqlMain {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	
+	public void run() {
+		while (true) {
+			try{
+				ResultSet rs = this.query("SELECT CURRENT_TIME;");
+				rs.first();
+				System.out.println("MYSQL ping send and received current time: " + rs.getTime(1));
+				
+				Thread.sleep(3600000);
+			}catch(SQLException se){
+				//Handle errors for JDBC
+				se.printStackTrace();
+			}catch(Exception e){
+				//Handle errors for Class.forName
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 }
