@@ -11,11 +11,14 @@ import java.util.Properties;
 import com.cineafx.icbot.bot.*;
 import com.cineafx.icbot.sql.*;
 
-public class Main {
+public class Main implements Runnable {
 
-	SqlChannels sqlChannels;
+	private SqlChannels sqlChannels;
+	private boolean startupComplete = false;
 
 	public Main() throws Exception {
+		new Thread(this).start();
+		
 		// read properties from file
 		Properties properties = getProperties();
 		//apply default settings for the twitchbot builder
@@ -29,6 +32,9 @@ public class Main {
 		String sqluser = properties.getProperty("sqluser");
 		String sqlpass = properties.getProperty("sqlpass");
 		String sqldbname = properties.getProperty("sqldbname");
+		
+		//This is what decides whether the entire bot shuts down
+		boolean globalRunning = true;
 
 		//if not all required infos are there exit the program
 		if (sqlserver.isEmpty() || sqluser.isEmpty() || sqlpass.isEmpty() || sqldbname.isEmpty()) {
@@ -36,8 +42,9 @@ public class Main {
 		}
 
 		sqlChannels = new SqlChannels(sqlserver, sqluser, sqlpass, sqldbname);
-
-		while (true) {
+		
+		int loopcounter = 0;
+		while (globalRunning) {
 			//temporary way of adding channels (until sql is done)
 			List<String> channels = new ArrayList<>();
 
@@ -46,44 +53,73 @@ public class Main {
 
 			//add the channels received by an sql query
 			channels.addAll(Arrays.asList(sqlChannels.getChannels()));
-
-			// remove bots that are not present in the database
-			for (int i = 0; i < bots.size(); i++) {
-				//checks if channel isn't supposed to exist
-				if (!channels.contains(bots.get(i).getChannelname())) {
-					//removes bot
-					System.out.println("Removed: " + bots.get(i).getChannelname());
-					bots.remove(i);
-				}
-			}
-
-			// add bots that are present in the database
-			for (String channel : channels) {
-				boolean exists = false;
-				//checks if channel exist
+			
+			//Every tenth loop
+			if (loopcounter % 10 == 0) {
+				// remove bots that are not present in the database
 				for (int i = 0; i < bots.size(); i++) {
-					if (channel.equals(bots.get(i).getChannelname())) {
-						exists = true;
+					//checks if channel isn't supposed to exist
+					if (!channels.contains(bots.get(i).getChannelname())) {
+						//removes bot
+						System.out.println("Removed: " + bots.get(i).getChannelname());
+						bots.get(i).setRunning(false);
+						bots.remove(i);
 					}
 				}
-				if (!exists) {
-					//creates new bot
-					BotMain newBot = TwitchBotBuilder.newBot().setChannel(channel).make();
-					//first time setup of the bot
-					newBot.init();
-					//adds bot to bot array
-					bots.add(newBot);
-					System.out.println("Added: " + channel);
+				
+				// add bots that are present in the database
+				for (String channel : channels) {
+					boolean exists = false;
+					//checks if channel exist
+					for (int i = 0; i < bots.size(); i++) {
+						if (channel.equals(bots.get(i).getChannelname())) {
+							exists = true;
+						}
+					}
+					if (!exists) {
+						//creates new bot
+						BotMain newBot = TwitchBotBuilder.newBot().setChannel(channel).make();
+						//first time setup of the bot
+						newBot.init();
+						//adds bot to bot array
+						bots.add(newBot);
+						System.out.println("Added: " + channel);
+					}
+				}
+
+				loopcounter = 0;
+			}
+			
+			for (int i = 0; i < bots.size(); i++) {
+				//checks if channel received a global shutdown command
+				if (bots.get(i).getGlobalShutdown()) {
+					System.out.println("###################---SHUTDOWN---###################");
+					System.out.println("Global shutdown from: " + bots.get(i).getChannelname());
+					//stops all bots after their message queue is empty
+					for (BotMain bot : bots) {
+						bot.setRunning(false);
+					}
+					globalRunning = false;
 				}
 			}
-			//waits 10 seconds
-			try {
-				Thread.sleep(10000);
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.exit(0);
+			
+			
+			startupComplete = true;
+			//if while loop is going to stop anyway, there is no need to wait 
+			//Will still wait 2 seconds to let all other bots do their "shutdown procedure" (Send last message)
+			if (globalRunning) {
+				//waits 3 seconds
+				try {
+					Thread.sleep(3000);
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(0);
+				}
 			}
+			loopcounter++;
 		}
+		System.out.println("Shutdown...");
+		System.exit(0);
 	}
 
 	/**
@@ -131,6 +167,21 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		new Main();
+	}
+
+	//Will check if bot started successfully and if not stop the bot
+	public void run() {
+		try {
+			//Wait 15 seconds
+			Thread.sleep(15000);
+			if (!startupComplete) {
+				System.out.println("ERROR during startup\nShutting down...");
+				System.exit(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 }

@@ -61,7 +61,9 @@ public class MessageHandlerMain {
 		if (checkPropertyStart(property, "message", "!icquit") && checkProperty(property, "user-name", botMain.getAdmin())) {
 			returnMessage = messageProperties.getProperty("user-name") + ", " + "Shutting down...";
 			//set isRunning to false and "end" the queue which will terminate the program
-			botMain.setRunning(false);
+			//botMain.setRunning(false);
+			//Also shutdown all other bots
+			botMain.setGlobalShutdown();
 		}
 
 		return returnMessage;

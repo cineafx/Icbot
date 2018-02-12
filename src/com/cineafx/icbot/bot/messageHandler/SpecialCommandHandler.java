@@ -60,18 +60,12 @@ public class SpecialCommandHandler {
 		    	return "Not a valid URL";
 		    }
 		    
-		    System.out.println("_________________");
-		    
+		    //doesn't end with .html 
 		    Matcher matcher = Pattern.compile("(?i)((.*)\\.([A-Z]{1,6}))$").matcher(uri.getPath());
-		    if(!matcher.find()) {
+		    if(!matcher.find() && !(inputUrl.charAt(inputUrl.length()) == '/')) {
 
 		    	inputUrl += "/";
-		    	System.out.println("MATCHES");
 		    }
-		    
-		    
-		    System.out.println(uri.getPath());
-		    System.out.println("_________________");
 		    
 		    URL url = new URL(inputUrl);
 	        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));

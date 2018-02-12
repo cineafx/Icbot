@@ -97,7 +97,7 @@ public class Chat implements Runnable {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				System.exit(0);
+				//System.exit(0);
 			}
 		});
 		messagequeue.start();
@@ -129,11 +129,11 @@ public class Chat implements Runnable {
 	 * Receiving of messages
 	 */
 	public void run() {
-		while (true) {
+		while (botMain.isRunning()) {
 			String returnMessage;
 			try {
 				//repeat while a new line can be read
-			while ((line = conn.reader().readLine()) != null) {
+			while ((line = conn.reader().readLine()) != null && botMain.isRunning()) {
 					//System.out.println("From: " + botMain.getChannelname() + ": " + line);
 					if (line.startsWith("PING")) {
 						sendRawLine("PONG tmi.twitch.tv");

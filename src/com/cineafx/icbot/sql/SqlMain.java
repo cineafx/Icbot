@@ -226,7 +226,6 @@ public class SqlMain implements Runnable {
 		}
 		return null;
 	}
-
 	
 	public void run() {
 		while (true) {

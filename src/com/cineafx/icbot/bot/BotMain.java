@@ -13,6 +13,7 @@ public class BotMain {
 	private String sqlUsername;
 	private String sqlPassword;
 	private String sqlDbname;
+	private boolean globalShutdown = false;
 	
 	private long lastCommandCacheUpdate = 0;
 
@@ -198,4 +199,21 @@ public class BotMain {
 		this.lastCommandCacheUpdate = System.currentTimeMillis();
 	}
 
+	/**
+	 * Executing this function will mark this bot as "received shutdown command"<br>
+	 * The main class will now shutdown all bots
+	 */
+	public void setGlobalShutdown() {
+		this.globalShutdown = true;
+	}
+
+	/**
+	 * Returns the global shutdown variable
+	 * 
+	 * @return globalShutdown
+	 */
+	public boolean getGlobalShutdown() {
+		return globalShutdown;
+	}
+	
 }
