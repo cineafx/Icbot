@@ -135,7 +135,7 @@ public class CommandHandler {
 			//${channel}
 			if (returnString.toLowerCase().contains("${channel}")) {
 				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${channel}"), 
-						messageProperties.getProperty("channel", "ERROR"));
+						messageProperties.getProperty("channel", "ERROR").substring(1));
 			}
 			
 			//${botuptime}

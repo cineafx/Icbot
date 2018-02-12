@@ -37,8 +37,6 @@ public class Connection implements Runnable {
 			chat.sendRawLine("CAP REQ :twitch.tv/commands\r\n");
 			chat.sendRawLine("CAP REQ :twitch.tv/tags\r\n");
 
-			// msgHandler = new MessageHandler(this.getChannelname(),
-			// this.isMainChannel(), this.nick);
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				if (line.indexOf("004") >= 0) {
@@ -46,6 +44,7 @@ public class Connection implements Runnable {
 					break;
 				} else if (line.indexOf("433") >= 0) {
 					System.out.println("Nickname is already in use.");
+					System.exit(1);
 					return;
 				}
 			}
