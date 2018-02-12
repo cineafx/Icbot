@@ -235,6 +235,7 @@ public class SqlMain implements Runnable {
 				rs.first();
 				System.out.println("MYSQL ping send and received current time: " + rs.getTime(1));
 				
+				//wait 1 hour
 				Thread.sleep(3600000);
 			}catch(SQLException se){
 				//Handle errors for JDBC
