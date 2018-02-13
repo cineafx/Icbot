@@ -11,7 +11,7 @@ public class SqlMain implements Runnable {
 	private Connection conn;
 
 	public SqlMain(String servername, String username, String password, String dbname) {
-		this.dbUrl  = "jdbc:mysql://" + servername + "/" + dbname;
+		this.dbUrl  = "jdbc:mysql://" + servername + "/" + dbname + "?useUnicode=true&character_set_server=utf8mb4";
 		this.user = username;
 		this.pass = password;
 		this.dbname = dbname;
