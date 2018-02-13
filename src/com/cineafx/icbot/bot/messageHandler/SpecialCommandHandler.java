@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +19,57 @@ public class SpecialCommandHandler {
 	public SpecialCommandHandler() {
 		System.setProperty("http.agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36");
 		startuptime = System.currentTimeMillis();
+	}
+	
+	/**
+	 * Returns a random integer between <b>min</b> and <b>max</b>
+	 * @param min
+	 * @param ma
+	 * @return randomInt
+	 */
+	public String randomInt(String min, String max) {
+		//If input isn't Integer number return error
+		try {
+			int minInt = Integer.parseInt(min);
+			int maxInt = Integer.parseInt(max);
+			//Only if max is larger or equals to min it can return a random number
+			if (maxInt >= minInt) {
+				return String.valueOf(ThreadLocalRandom.current().nextInt(minInt, maxInt + 1));
+			} else {
+				return "ERROR: min is larger than max";
+			}
+		} catch (NumberFormatException nfe) {
+			return "ERROR: NumberFormat";
+		}
+	}
+	
+	/**
+	 * Returns a random double between <b>min</b> and <b>max</b> with <b>digits</b> amount of decimal digits
+	 * @param min
+	 * @param max
+	 * @param digits
+	 * @return randomDouble
+	 */
+	public String randomDouble(String min, String max, String digits) {
+		//If input isn't Integer number return error
+		try {
+			double minDouble = Double.parseDouble(min);
+			double maxDouble = Double.parseDouble(max);
+			double digitsDouble = Double.parseDouble(digits);
+			
+			//Only if max is larger or equals to min it can return a random number
+			if (maxDouble >= minDouble) {
+				double randomDouble = ThreadLocalRandom.current().nextDouble(minDouble, maxDouble + 1);
+				
+				randomDouble = Math.round(randomDouble * Math.pow(10, digitsDouble));
+				randomDouble = randomDouble / Math.pow(10, digitsDouble);
+				return String.valueOf(randomDouble);
+			} else {
+				return "ERROR: mix is larger than max";
+			}
+		} catch (NumberFormatException nfe) {
+			return "ERROR: NumberFormat";
+		}
 	}
 	
 	public String botUpTime() {
@@ -62,7 +114,7 @@ public class SpecialCommandHandler {
 		    
 		    //doesn't end with .html 
 		    Matcher matcher = Pattern.compile("(?i)((.*)\\.([A-Z]{1,6}))$").matcher(uri.getPath());
-		    if(!matcher.find() && !(inputUrl.charAt(inputUrl.length()) == '/')) {
+		    if(!matcher.find() && !(inputUrl.charAt(inputUrl.length()-1) == '/')) {
 
 		    	inputUrl += "/";
 		    }
