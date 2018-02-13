@@ -128,33 +128,50 @@ public class CommandHandler {
 
 			//${user}
 			if (returnString.toLowerCase().contains("${user}")) {
-				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${user}"), 
+				returnString = returnString.replaceAll("(?i)\\$\\{user\\}", 
 						messageProperties.getProperty("user-name", "ERROR"));
 			}
 			
 			//${channel}
 			if (returnString.toLowerCase().contains("${channel}")) {
-				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${channel}"), 
+				returnString = returnString.replaceAll("(?i)\\$\\{channel\\}", 
 						messageProperties.getProperty("channel", "ERROR").substring(1));
 			}
 			
 			//${botuptime}
 			if (returnString.toLowerCase().contains("${botuptime}")) {
-				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${botuptime}"), 
+				returnString = returnString.replaceAll("(?i)\\$\\{botuptime\\}", 
 						specialCommandHandler.botUpTime());
 			}
 			
 			//${url=.*}
 			if (returnString.toLowerCase().contains("${url=")) {
 				//will return the url from the ${url= XXX } command
-				Pattern pattern = Pattern.compile("(?i)" + Pattern.quote("${url=") + "(.*?)" + Pattern.quote("}"));
+				Pattern pattern = Pattern.compile("(?i)\\$\\{url=(.*?)\\}");
 				Matcher matcher = pattern.matcher(returnString);
 				matcher.find();
 				
-				returnString = returnString.replaceAll("(?i)" + Pattern.quote("${url=") + ".*" + Pattern.quote("}"), 
-						specialCommandHandler.getFromURL(matcher.group(1)));
+				returnString = matcher.replaceFirst(specialCommandHandler.getFromURL(matcher.group(1)));
 			}
-			System.out.println(i + ": " + returnString);
+			
+			//${randomint(min,max)}
+			if (returnString.toLowerCase().contains("${randomint(")) {
+				Pattern pattern = Pattern.compile("(?i)\\$\\{randomint\\((\\d+?),(\\d+?)\\)\\}");
+				Matcher matcher = pattern.matcher(returnString);
+				matcher.find();
+				
+				returnString = matcher.replaceFirst(specialCommandHandler.randomInt(matcher.group(1), matcher.group(2)));
+			}
+			
+			//${randomdouble(min,max,digits)}
+			if (returnString.toLowerCase().contains("${randomdouble(")) {
+				Pattern pattern = Pattern.compile("(?i)\\$\\{randomdouble\\((\\d+(\\.\\d+)?),(\\d+(\\.\\d+)?),(\\d+?)\\)\\}");
+				Matcher matcher = pattern.matcher(returnString);
+				matcher.find();
+				
+				returnString = matcher.replaceFirst(specialCommandHandler.randomDouble(matcher.group(1), matcher.group(3), matcher.group(5)));
+			}
+
 			i++;
 		}
 		return returnString;
